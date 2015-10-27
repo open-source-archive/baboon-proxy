@@ -14,15 +14,19 @@ import (
 	"github.com/zalando-techmonkeys/baboon-proxy/config"
 	"github.com/zalando/gin-contrib/ginoauth2"
 	"os"
+	"strconv"
 )
 
+var port *int
+
 func usage() {
-	fmt.Fprint(os.Stderr, "usage: baboon-proxy -stderrthreshold=[INFO|WARN|FATAL] -log_dir=[string]\n")
+	fmt.Fprint(os.Stderr, "usage: baboon-proxy -port=80 -stderrthreshold=[INFO|WARN|FATAL] -log_dir=[string]\n")
 	flag.PrintDefaults()
 	os.Exit(2)
 }
 
 func init() {
+	port = flag.Int("port", 80, "Default Port")
 	flag.Usage = usage
 	flag.Parse()
 }
@@ -95,8 +99,17 @@ func main() {
 		emergencyLTM.PATCH("/whiteips", client.LTMWhiteIPPatch)
 		emergencyLTM.DELETE("/blockips", client.LTMRemoveBlockIPPatch)
 	}
-	run := app.RunTLS(":443", conf.Security["certFile"], conf.Security["keyFile"])
-	if run != nil {
-		fmt.Println("Could not start web server,", run.Error())
+	switch {
+	case *port == 443:
+
+		run := app.RunTLS(fmt.Sprintf(":%s", strconv.Itoa(*port)), conf.Security["certFile"], conf.Security["keyFile"])
+		if run != nil {
+			fmt.Println("Could not start web server,", run.Error())
+		}
+	default:
+		run := app.Run(fmt.Sprintf(":%s", strconv.Itoa(*port)))
+		if run != nil {
+			fmt.Println("Could not start web server,", run.Error())
+		}
 	}
 }
