@@ -23,8 +23,8 @@ security:
   apiFile : ./f5root.json
 
 documentation:
-  ltmdocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/local%20trafficmanager.html
-  gtmdocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/global%20trafficmanager.html
+  ltmdocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/local%20trafficmanager/index.html
+  gtmdocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/global%20trafficmanager/index.html
   ltmpooldocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/local%20trafficmanager/pools.html
   ltmpoolmemberdocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/local%20trafficmanager/poolmembers.html
   ltmvirtualdocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/local%20trafficmanager/virtual-servers.html
