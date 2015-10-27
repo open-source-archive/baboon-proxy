@@ -1,0 +1,7 @@
+---
+endpoints:
+  AuthURL:  https://token.company.com/access_token
+
+allowedusers:
+  - username: employee1
+    role: employees
