@@ -1,0 +1,1418 @@
+swagger: '2.0'
+
+info:
+  title: Baboon Proxy API
+  description: LTM and GTM as a Service. Create pools, virtual server via RESTful API.
+  version: "1.0"
+  contact:
+    name: Techmonkeys
+    email: team-techmonkeys@zalando.de
+schemes:
+  - https
+#host: 127.0.0.1:443
+basePath: /api
+produces:
+- application/json
+consumes:
+- application/json
+
+paths:
+  '/gtms/{trafficmanager}/pools':
+    get:
+      summary: Show dns trafficmanager pools
+      description: |
+        The pools endpoint returns information about all
+        pools on a dns trafficmanager
+      produces:
+        - application/json
+      tags:
+        - GTM Pool
+      responses:
+        200:
+          description: List of dns trafficmanager pools
+          schema:
+            type: object
+            $ref: '#/definitions/TrafficManagerPools'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: trafficmanager
+          in: path
+          description: DNS trafficmanager to fetch
+          required: true
+          type: string
+  '/gtms/{trafficmanager}/pools/{poolname}':
+    get:
+      summary: Show dns trafficmanager pool
+      description: |
+        The pool endpoint returns information about a
+        specific pool on a dns trafficmanager
+      produces:
+        - application/json
+      tags:
+        - GTM Pool
+      responses:
+        200:
+          description: List of dns trafficmanager pools
+          schema:
+            type: object
+            $ref: '#/definitions/TrafficManagerPool'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: trafficmanager
+          in: path
+          description: DNS trafficmanager to fetch
+          required: true
+          type: string
+        - name: poolname
+          in: path
+          description: Pool to fetch
+          required: true
+          type: string
+  '/gtms/{trafficmanager}/wideips':
+    get:
+      summary: Show dns trafficmanager wide ips
+      description: |
+        The wideips endpoint returns information about all
+        DNS records on a dns trafficmanager
+      produces:
+        - application/json
+      tags:
+        - GTM Wide IP
+      responses:
+        200:
+          description: List of dns trafficmanager wide ips
+          schema:
+            type: object
+            $ref: '#/definitions/Wideips'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: trafficmanager
+          in: path
+          description: DNS trafficmanager to fetch
+          required: true
+          type: string
+  '/gtms/{trafficmanager}/wideips/{wideipname}':
+    get:
+      summary: Show dns trafficmanager wide ip
+      description: |
+        The wideip endpoint returns information about an
+        specific DNS record on a dns trafficmanager
+      produces:
+        - application/json
+      tags:
+        - GTM Wide IP
+      responses:
+        200:
+          description: List of dns trafficmanager wide ips
+          schema:
+            type: object
+            $ref: '#/definitions/Wideip'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: trafficmanager
+          in: path
+          description: DNS trafficmanager to fetch
+          required: true
+          type: string
+        - name: wideipname
+          in: path
+          description: Wide IP name to fetch
+          required: true
+          type: string
+  '/ltms/{lbpair}/pools':
+    get:
+      summary: Show loadbalancer pools
+      description: |
+        The pools endpoint returns information about all
+        loadbalancer pools on a loadbalancer pair
+      produces:
+        - application/json
+      tags:
+        - LB Pool
+      responses:
+        200:
+          description: List of loadbalancer pools
+          schema:
+            type: object
+            $ref: '#/definitions/Pools'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair to fetch
+          required: true
+          type: string
+    post:
+      summary: Creates a loadbalancer pool
+      operationId: createLBPool
+      consumes:
+        - application/json
+      description: |
+        Create a new loadbalancer pool
+      produces:
+        - application/json
+      tags:
+        - LB Pool
+      responses:
+        201:
+          description: List of created loadbalancer pool
+          schema:
+            $ref: '#/definitions/createPoolStatus'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair to fetch
+          required: true
+          type: string
+        - name: pool
+          in: body
+          description: Loadbalancer Pool
+          required: true
+          schema:
+            $ref: '#/definitions/createPool'
+    put:
+      summary: Modifies a loadbalancer pool
+      operationId: modifyLBPool
+      consumes:
+        - application/json
+      description: |
+        Modify a loadbalancer pool
+      produces:
+        - application/json
+      tags:
+        - LB Pool
+      responses:
+        200:
+          description: List of modified loadbalancer pool
+          schema:
+            $ref: '#/definitions/modifyPoolStatus'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair to fetch
+          required: true
+          type: string
+        - name: pool
+          in: body
+          description: Loadbalancer Pool
+          required: true
+          schema:
+            $ref: '#/definitions/modifyPool'
+    delete:
+      summary: Deletes a loadbalancer pool
+      operationId: deleteLBPool
+      consumes:
+        - application/json
+      description: |
+        Delete a loadbalancer pool
+      produces:
+        - application/json
+      tags:
+        - LB Pool
+      responses:
+        200:
+          description: List of deleted loadbalancer pool
+          schema:
+            $ref: '#/definitions/deletePoolStatus'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair to fetch
+          required: true
+          type: string
+        - name: pool
+          in: body
+          description: Loadbalancer Pool
+          required: true
+          schema:
+            $ref: '#/definitions/deletePool'
+
+  '/ltms/{lbpair}/pools/{poolname}':
+    get:
+      summary: Show specific loadbalancer pool
+      description: |
+        The poolname endpoint returns information about
+        a specific pool on a loadbalancer pair
+      produces:
+        - application/json
+      tags:
+        - LB Pool
+      responses:
+        200:
+          description: List of loadbalancer pool
+          schema:
+            $ref: '#/definitions/Pool'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair to fetch
+          required: true
+          type: string
+        - name: poolname
+          in: path
+          description: Loadbalancer Pool
+          required: true
+          type: string
+  '/{lbpair}/pools/{poolname}/members':
+    get:
+      summary: Show pool members from specific loadbalancer pool
+      description: |
+        The members endpoint returns information about
+        pool members from a specific pool on a loadbalancer pair
+      produces:
+        - application/json
+      tags:
+        - LB Pool Member
+      responses:
+        200:
+          description: List of loadbalancer pool members
+          schema:
+            $ref: '#/definitions/PoolMembers'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair to fetch
+          required: true
+          type: string
+        - name: poolname
+          in: path
+          description: Loadbalancer pool
+          required: true
+          type: string
+    delete:
+      summary: Deletes a loadbalancer pool member
+      operationId: deleteLBPoolMember
+      consumes:
+        - application/json
+      description: |
+        Delete a loadbalancer pool member
+      produces:
+        - application/json
+      tags:
+        - LB Pool Member
+      responses:
+        200:
+          description: List of deleted loadbalancer pool member
+          schema:
+            $ref: '#/definitions/deletePoolMemberStatus'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair to fetch
+          required: true
+          type: string
+        - name: poolname
+          in: path
+          description: Loadbalancer Pool
+          required: true
+          type: string
+        - name: poolmember
+          in: body
+          description: Loadbalancer Pool Member
+          required: true
+          schema:
+            $ref: '#/definitions/deletePoolMember'
+    post:
+      summary: Create a loadbalancer pool member
+      operationId: createLBPoolMember
+      consumes:
+        - application/json
+      description: |
+        Creates a loadbalancer pool member
+      produces:
+        - application/json
+      tags:
+        - LB Pool Member
+      responses:
+        201:
+          description: List of created loadbalancer pool member
+          schema:
+            $ref: '#/definitions/createPoolMemberStatus'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair to fetch
+          required: true
+          type: string
+        - name: poolname
+          in: path
+          description: Loadbalancer Pool
+          required: true
+          type: string
+        - name: poolmember
+          in: body
+          description: Loadbalancer Pool Member
+          required: true
+          schema:
+            $ref: '#/definitions/createPoolMember'
+    put:
+      summary: Modify a loadbalancer pool member
+      operationId: modifyLBPoolMember
+      consumes:
+        - application/json
+      description: |
+        Modifies a loadbalancer pool member
+      produces:
+        - application/json
+      tags:
+        - LB Pool Member
+      responses:
+        200:
+          description: List of modified loadbalancer pool member
+          schema:
+            $ref: '#/definitions/modifyPoolMemberStatus'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair to fetch
+          required: true
+          type: string
+        - name: poolname
+          in: path
+          description: Loadbalancer Pool
+          required: true
+          type: string
+        - name: poolmember
+          in: body
+          description: Loadbalancer Pool Member
+          required: true
+          schema:
+            $ref: '#/definitions/modifyPoolMember'
+  '/{lbpair}/virtuals':
+    get:
+      summary: Show loadbalancer virtual servers
+      description: |
+        The virtual servers endpoint returns information about all loadbalancer virtual servers on a loadbalancer pair
+      produces:
+        - application/json
+      tags:
+        - LB Virtual Server
+      responses:
+        200:
+          description: List of virtual servers
+          schema:
+            $ref: '#/definitions/VirtualServers'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair to fetch
+          required: true
+          type: string
+    post:
+      summary: creates a loadbalancer virtual server
+      description: |
+        The virtual servers endpoint returns information about a created loadbalancer virtual server
+      produces:
+        - application/json
+      tags:
+        - LB Virtual Server
+      responses:
+        201:
+          description: List of created virtual server
+          schema:
+            $ref: '#/definitions/createVirtualServerStatus'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair to fetch
+          required: true
+          type: string
+        - name: virtualname
+          in: body
+          description: Virtual server
+          required: true
+          schema:
+            $ref: '#/definitions/createVirtualServer'
+  '/{lbpair}/virtuals/{virtualname}':
+    get:
+      summary: Show specific loadbalancer virtual server
+      description: |
+        The virtual server endpoint returns information about
+        a specific virtual server on a loadbalancer pair
+      produces:
+        - application/json
+      tags:
+        - LB Virtual Server
+      responses:
+        200:
+          description: List of a virtual server
+          schema:
+            $ref: '#/definitions/VirtualServer'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair to fetch
+          required: true
+          type: string
+        - name: virtualname
+          in: path
+          description: Virtual server
+          required: true
+          type: string
+  '/{lbpair}/virtuals/{virtualname}/{profile}':
+    get:
+      summary: Show specific loadbalancer virtual server profile
+      description: |
+        The profile endpoint returns information about
+        a specific profile from a virtual server on a loadbalancer pair
+      produces:
+        - application/json
+      tags:
+        - LB Virtual Server Profile
+      responses:
+        200:
+          description: List of loadbalancer virtual server profile
+          schema:
+            $ref: '#/definitions/VirtualServerProfiles'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair to fetch
+          required: true
+          type: string
+        - name: virtualname
+          in: path
+          description: Virtual server
+          required: true
+          type: string
+        - name: profile
+          in: path
+          description: Virtual server profile
+          required: true
+          type: string
+  '/{lbpair}/devices':
+    get:
+      summary: Show loadbalancer Devices
+      description: |
+        The devices endpoint returns information about an
+        loadbalancer pair
+      produces:
+        - application/json
+      tags:
+        - LB Device
+      responses:
+        200:
+          description: List of loadbalancer devices
+          schema:
+            $ref: '#/definitions/Devices'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair to fetch
+          required: true
+          type: string
+  '/{lbpair}/devices/{devicename}':
+    get:
+      summary: Loadbalancer device of a pair
+      description: |
+        The devicename endpoint returns information about a specific device on a loadbalancer pair
+      produces:
+        - application/json
+      tags:
+        - LB Device
+      responses:
+        200:
+          description: List of loadbalancer device
+          schema:
+            $ref: '#/definitions/Device'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair to fetch
+          required: true
+          type: string
+        - name: devicename
+          in: path
+          description: Name of a device to fetch
+          required: true
+          type: string
+  '/{lbpair}/datagroups':
+    get:
+      summary: Show loadbalancer datagroups
+      description: |
+        The datagroups endpoint returns information about datagroups on a loadbalancer pair
+      produces:
+        - application/json
+      tags:
+        - LB Datagroup
+      responses:
+        200:
+          description: List of loadbalancer datagroups
+          schema:
+            $ref: '#/definitions/Datagroups'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair to fetch
+          required: true
+          type: string
+    post:
+      summary: Creates a datagroup
+      operationId: createDatagroup
+      consumes:
+        - application/json
+      description: |
+        Creates a new loadbalancer datagroup
+      produces:
+        - application/json
+      tags:
+        - LB Datagroup
+      responses:
+        201:
+          description: List of created loadbalancer datagroup
+          schema:
+            $ref: '#/definitions/createDatagroupStatus'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair
+          required: true
+          type: string
+        - name: datagroup
+          in: body
+          description: Datagroup name
+          required: true
+          schema:
+            $ref: '#/definitions/createDatagroup'
+    delete:
+      summary: Deletes a datagroup
+      operationId: deleteDatagroup
+      consumes:
+        - application/json
+      description: |
+        Deletes a loadbalancer datagroup
+      produces:
+        - application/json
+      tags:
+        - LB Datagroup
+      responses:
+        200:
+          description: List of deleted loadbalancer datagroup
+          schema:
+            $ref: '#/definitions/deleteDatagroupStatus'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair
+          required: true
+          type: string
+        - name: datagroup
+          in: body
+          description: Datagroup
+          required: true
+          schema:
+            $ref: '#/definitions/deleteDatagroup'
+  '/{lbpair}/datagroups/{datagroup}':
+    get:
+      summary: Show specific loadbalancer datagroup
+      description: |
+        The datagroup endpoint returns information about  a specific datagroup on a loadbalancer pair
+      produces:
+        - application/json
+      tags:
+        - LB Datagroup
+      responses:
+        200:
+          description: List of loadbalancer datagroup
+          schema:
+            $ref: '#/definitions/Datagroups'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair to fetch
+          required: true
+          type: string
+        - name: datagroup
+          in: path
+          description: Datagroup
+          required: true
+          type: string
+    put:
+      summary: Modifies records in a datagroup
+      operationId: modifyDatagroupRecods
+      consumes:
+        - application/json
+      description: |
+        Modifies records from loadbalancer datagroup
+      produces:
+        - application/json
+      tags:
+        - LB Datagroup
+      responses:
+        200:
+          description: List of modifed records of loadbalancer datagroup
+          schema:
+            $ref: '#/definitions/modifyDatagroupStatus'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair
+          required: true
+          type: string
+        - name: datagroup
+          in: path
+          description: Datagroup
+          required: true
+          type: string
+        - name: records
+          in: body
+          description: Record objects
+          required: true
+          schema:
+            $ref: '#/definitions/modifyDatagroup'
+    patch:
+      summary: Add records in a datagroup
+      operationId: modifyDatagroupRecods
+      consumes:
+        - application/json
+      description: |
+        Modifies records from loadbalancer datagroup
+      produces:
+        - application/json
+      tags:
+        - LB Datagroup
+      responses:
+        200:
+          description: List of added records in a loadbalancer datagroup
+          schema:
+            $ref: '#/definitions/modifyDatagroupStatus'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: lbpair
+          in: path
+          description: Loadbalancer pair
+          required: true
+          type: string
+        - name: datagroup
+          in: path
+          description: Datagroup
+          required: true
+          type: string
+        - name: records
+          in: body
+          description: Record objects
+          required: true
+          schema:
+            $ref: '#/definitions/modifyDatagroup'
+definitions:
+  Error:
+    title: Error
+    properties:
+      detail:
+        type: string
+        description: Detailed error message
+      status:
+        type: integer
+        description: HTTP status code
+      title:
+        type: string
+        description: Title message
+      type:
+        type: string
+        description: Documentation URI
+  VirtualServers:
+    title: VirtualServers
+    properties:
+      kind:
+        type: string
+        example: tm:ltm:virtual:virtualcollectionstate
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/VirtualServer'
+  VirtualServer:
+    title: VirtualServer
+    type: object
+    properties:
+      kind:
+        type: string
+        example: tm:ltm:virtual:virtualstate
+      name:
+        type: string
+        example: vssl_www.zalando.de_443
+      partition:
+        type: string
+        example: Common
+      fullPath:
+        type: string
+        example: /Common/vssl_www.zalando.de_443
+      generation:
+        type: integer
+        example: 1
+      addressStatus:
+        type: string
+        example: yes
+      autoLasthop:
+        type: string
+        example: default
+      cmpEnabled:
+        type: string
+        example: yes
+      connectionLimit:
+        type: integer
+      destination:
+        type: string
+      enabled:
+        type: boolean
+      gtmScore:
+        type: integer
+      ipForward:
+        type: boolean
+      ipProtocol:
+        type: string
+      mask:
+        type: string
+      mirror:
+        type: string
+      mobileAppTunnel:
+        type: string
+      nat64:
+        type: string
+      pool:
+        type: string
+      rateLimit:
+        type: string
+      rateLimitDstMask:
+        type: integer
+      rateLimitMode:
+        type: string
+      rateLimitSrcMask:
+        type: integer
+      source:
+        type: string
+      sourceAddressTranslation:
+        type: string
+      sourcePort:
+        type: string
+      synCookieStatus:
+        type: string
+      translateAddress:
+        type: string
+      translatePort:
+        type: string
+      vlansEnabled:
+        type: boolean
+      vsIndex:
+        type: integer
+      rules:
+        type: array
+        items:
+          type: string
+      vlans:
+        type: array
+        items:
+          type: string
+      poolsReference:
+        type: string
+      profilesReference:
+        type: string
+      persist:
+        type: array
+        items:
+          type: string
+  createVirtualServer:
+    title: Create a Virtual Server
+    properties:
+      name:
+        type: string
+      destination:
+        type: string
+      mask:
+        type: string
+      ipProtocol:
+        type: string
+      pool:
+        type: string
+      profiles:
+        type: array
+        items:
+          $ref: '#/definitions/addVirtualServerProfile'
+  addVirtualServerProfile:
+    title: Add Profiles to Virtual Server
+    type: object
+    properties:
+      name:
+        type: string
+  createVirtualServerStatus:
+    title: Status Create Virtual Server
+  createPool:
+    title: Create a Pool
+    properties:
+      name:
+        type: string
+      partition:
+        type: string
+      members:
+        type: array
+        items:
+          $ref: '#/definitions/createPoolMember'
+  modifyPool:
+    title: Modify a Pool
+    properties:
+      name:
+        type: string
+      partition:
+        type: string
+      members:
+        type: array
+        items:
+          $ref: '#/definitions/modifyPoolMember'
+  modifyPoolStatus:
+    title: Status Modiy Pool
+  createPoolMemberStatus:
+    title: Status Create Pool Member
+  modifyPoolMemberStatus:
+    title: Status Modify Pool Member
+  deletePoolMemberStatus:
+    title: Status Delete Pool Member
+  createPoolMember:
+    type: object
+    title: Pool Members
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+  modifyPoolMember:
+    type: object
+    title: Modify a Pool Member
+    properties:
+      name:
+        type: string
+      status:
+        type: string
+  deletePoolMember:
+    title: Delete a Pool Member
+    properties:
+      name:
+        type: string
+  createPoolStatus:
+    title: Status Create Pool
+  deletePool:
+    type: object
+    title: Delete Pool
+    properties:
+      name:
+        type: string
+  deletePoolStatus:
+    title: Status Delete Pool
+  Wideips:
+    title: Wide IPs
+   properties:
+      kind:
+        type: string
+      items:
+       type: array
+       items:
+        $ref: '#/definitions/Wideip'
+  Wideip:
+   title: Wide IP
+   properties:
+      kind:
+        type: string
+  TrafficManagerPools:
+   title: Pools
+   properties:
+      kind:
+        type: string
+      items:
+       type: array
+       items:
+        $ref: '#/definitions/TrafficManagerPool'
+  TrafficManagerPool:
+   title: Pool
+   properties:
+      kind:
+        type: string
+      name:
+        type: string
+      partition:
+        type: string
+      fullPath:
+        type: string
+      generation:
+        type: integer
+      alternateMode:
+        type: string
+      dynamicRatio:
+        type: string
+      enabled:
+        type: boolean
+      fallbackIpv4:
+        type: string
+      fallbackIpv6:
+        type: string
+      fallbackMode:
+        type: string
+      limitMaxBps:
+        type: integer
+      limitMaxBpsStatus:
+        type: string
+      limitMaxConnections:
+        type: integer
+      limitMaxConnectionsStatus:
+        type: string
+      limitMaxPps:
+        type: integer
+      limitMaxPpsStatus:
+        type: string
+      loadBalancingMode:
+        type: string
+      manualResume:
+        type: string
+      maxAddressReturned:
+        type: integer
+      monitor:
+        type: string
+      qosHitRatio:
+        type: integer
+      qosHops:
+        type: integer
+      qosKilobytesSecond:
+        type: integer
+      qosLcs:
+        type: integer
+      qosPacketRate:
+        type: integer
+      qosRtt:
+        type: integer
+      qosTopology:
+        type: integer
+      qosVsCapacity:
+        type: integer
+      qosVsScore:
+        type: integer
+      ttl:
+        type: integer
+      verifyMemberAvailability:
+        type: string
+      membersReference:
+        type: string
+  Pools:
+    title: Pools
+    properties:
+      kind:
+        type: string
+        example: tm:ltm:pool:poolcollectionstate
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/Pool'
+  Pool:
+    type: object
+    title: Pool
+    properties:
+      kind:
+        type: string
+        example: tm:ltm:pool:poolstate
+      name:
+        type: string
+        example: itr-http
+      partition:
+        type: string
+        example: Common
+      fullPath:
+        type: string
+        example: /Common/itr-http
+      generation:
+        type: integer
+        example: 1
+      allowNat:
+        type: string
+        example: yes
+      allowSnat:
+        type: string
+        example: yes
+      description:
+        type: string
+        example: ITR Http
+      ignorePersistedWeight:
+        type: string
+        example: disabled
+      ipTosToClient:
+        type: string
+        example: pass-through
+      ipTosToServer:
+        type: string
+        example: pass-through
+      linkQosToClient:
+        type: string
+        example: pass-through
+      linkQosToServer:
+        type: string
+        example: pass-through
+      loadBalancingMode:
+        type: string
+        example: round-robin
+      minActiveMembers:
+        type: integer
+        example: 0
+      minUpMembers:
+        type: integer
+        example: 0
+      minUpMembersAction:
+        type: string
+        example: failover
+      minUpMembersChecking:
+        type: string
+        example: disabled
+      monitor:
+        type: string
+        example: /Common/www.zalando.de
+      queueDepthLimit:
+        type: integer
+        example: 0
+      queueOnConnectionLimit:
+        type: string
+        example: disabled
+      queueTimeLimit:
+        type: integer
+        example: 0
+      reselectTries:
+        type: integer
+        example: 0
+      slowRampTime:
+        type: integer
+        example: 10
+      members:
+        type: string
+        example: https://127.0.0.1:5443/v1/itr-ltm/pools/itr-http/members/
+  PoolMembers:
+    title: PoolMembers
+    properties:
+      kind:
+        type: string
+        example: tm:ltm:pool:members:memberscollectionstate
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/PoolMember'
+  PoolMember:
+    type: object
+    properties:
+      kind:
+        type: string
+        example: tm:ltm:pool:members:membersstate
+      name:
+        type: string
+        example: 10.10.33.1:80
+      partition:
+        type: string
+        example: Common
+      fullPath:
+        type: string
+        example: /Common/10.10.33.1:80
+      generation:
+        type: integer
+      address:
+        type: string
+        example: 10.10.33.1
+      connectionLimit:
+        type: integer
+        example: 0
+      dynamicRatio:
+        type: integer
+        example: 1
+      inheritProfile:
+        type: string
+        example: enabled
+      logging:
+        type: string
+        example: disabled
+      monitor:
+        type: string
+        example: default
+      priorityGroup:
+        type: integer
+        example: 0
+      rateLimit:
+        type: string
+        example: disabled
+      ratio:
+        type: integer
+        example: 1
+      session:
+        type: string
+        example: monitor-enabled
+      state:
+        type: string
+        example: up
+  Devices:
+    title: Devices
+    properties:
+      kind:
+        type: string
+        example: tm:cm:device:devicecollectionstate
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/Device'
+  Device:
+    type: object
+    title: Device
+    properties:
+      kind:
+        type: string
+        example: tm:cm:device:devicestate
+      name:
+        type: string
+      fullPath:
+        type: string
+      generation:
+        type: integer
+      activeModules:
+        type: array
+        items:
+          type: string
+      baseMac:
+        type: string
+      build:
+        type: string
+      cert:
+        type: string
+      chassisId:
+        type: string
+      chassisType:
+        type: string
+      configsyncIp:
+        type: string
+      edition:
+        type: string
+      failoverState:
+        type: string
+      haCapacity:
+        type: integer
+      hostname:
+        type: string
+      key:
+        type: string
+      managementIp:
+        type: string
+      marketingName:
+        type: string
+      mirrorIp:
+        type: string
+      mirrorSecondaryIp:
+        type: string
+      multicastInterface:
+        type: string
+      multicastIp:
+        type: string
+      multicastPort:
+        type: string
+      optionalModules:
+        type: array
+        items:
+          type: string
+      platformId:
+        type: string
+      product:
+        type: string
+      selfDevice:
+        type: string
+      timeZone:
+        type: string
+      version:
+        type: string
+      unicastAddress:
+        type: array
+        items:
+           $ref: '#/definitions/DeviceUnicastAddress'
+  DeviceUnicastAddress:
+    type: object
+    title: DeviceUnicastAddress
+    properties:
+      effectiveIp:
+        type: string
+      effectivePort:
+        type: integer
+      ip:
+        type: string
+      port:
+        type: integer
+  VirtualServerProfiles:
+    title: Virtual Server Profiles
+    properties:
+      kind:
+        type: string
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/VirtualServerProfile'
+  VirtualServerProfile:
+    title: Virtual Server Profile
+    type: object
+    properties:
+      kind:
+        type: string
+      name:
+        type: string
+      partition:
+        type: string
+      fullpath:
+        type: string
+      generation:
+        type: integer
+      context:
+        type: string
+  Datagroups:
+    title: Datagroups
+    properties:
+      kind:
+        type: string
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/Datagroup'
+  Datagroup:
+    title: Datagroup
+    type: object
+    properties:
+      kind:
+        type: string
+      name:
+        type: string
+      parition:
+        type: string
+      fullpath:
+        type: string
+      generation:
+        type: integer
+      type:
+        type: string
+      records:
+        type: array
+        items:
+          $ref: '#/definitions/DatagroupRecords'
+  DatagroupRecords:
+    title: Datagroup Records
+    type: object
+    properties:
+      name:
+        type: string
+      data:
+        type: string
+  createDatagroup:
+    title: Create a Datagroup
+    properties:
+      name:
+        type: string
+      type:
+        type: string
+      records:
+        type: array
+        items:
+          $ref: '#/definitions/DatagroupRecords'
+  createDatagroupStatus:
+    title: Status Create Datagroup
+  modifyDatagroup:
+    title: Modify a Datagroup
+    properties:
+      records:
+        type: array
+        items:
+          $ref: '#/definitions/DatagroupRecords'
+  modifyDatagroupStatus:
+    title: Status Modify Datagroup
+  deleteDatagroup:
+    title: Delete a Datagroup
+    properties:
+      name:
+        type: string
+  deleteDatagroupStatus:
+    title: Status Delete Datagroup
+
