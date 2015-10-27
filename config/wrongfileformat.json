@@ -1,0 +1,11 @@
+---
+endpoints:
+  AuthURL:  https://token.company.com/access_token
+  TokenURL: https://auth.company.com/auth2/tokeninfo
+
+allowedusers:
+  - username: employee1
+    fullname: First Employee
+    role: employees
+    group: root
+
