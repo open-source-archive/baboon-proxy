@@ -33,7 +33,6 @@ func Request(method int, u string, body interface{}) (*Response, error) {
 		}
 		glog.Infof("Contacting host: %s json data %s", u, string(data))
 	}
-
 	switch method {
 	case common.GET:
 		{
