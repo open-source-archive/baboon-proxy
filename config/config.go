@@ -8,7 +8,7 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/spf13/viper"
-	"github.com/zalando/gin-contrib/ginoauth2"
+	"github.com/zalando-techmonkeys/gin-oauth2"
 	"golang.org/x/oauth2"
 )
 
