@@ -8,12 +8,11 @@ import (
 )
 
 var (
-	sess        napping.Session
-	cln         http.Client
-	tr          http.Transport
-	tlsconf     tls.Config
-	credentials Credentials
-	headers     http.Header
+	sess    napping.Session
+	cln     http.Client
+	tr      http.Transport
+	tlsconf tls.Config
+	headers http.Header
 )
 
 // InitSession initiliaze HTTPS session

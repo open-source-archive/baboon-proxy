@@ -1,20 +1,19 @@
 package backend
 
 import (
-	"encoding/json"
+	"github.com/golang/glog"
 	"github.com/zalando-techmonkeys/baboon-proxy/config"
-	"log"
-	"os"
 )
 
 var conf *config.Config
+var credentials *Credentials
 
 // Credentials contain fields
 // which are necessary to use
 // F5 API
 type Credentials struct {
 	User     string `json:"user"`
-	Password string `json:"pass"`
+	Password string `json:"password"`
 }
 
 // InitCredentials load config file
@@ -22,17 +21,13 @@ type Credentials struct {
 // from F5 device
 func InitCredentials() {
 	conf = config.LoadConfig()
-
-	credentials = Credentials{}
-
-	apiFile := conf.Security["apiFile"]
-	file, err := os.Open(apiFile)
-	if err != nil {
-		log.Fatalf("File not found %s", apiFile)
+	switch {
+	case conf.Backend["f5user"] == "":
+		glog.Fatalf("Could not get F5 user from config file")
+	case conf.Backend["f5password"] == "":
+		glog.Fatalf("Could not get F5 password from config file")
+	default:
+		credentials = &Credentials{conf.Backend["f5user"], conf.Backend["f5password"]}
 	}
-	config := json.NewDecoder(file)
-	err = config.Decode(&credentials)
-	if err != nil {
-		log.Fatalf("Cannot decode configuration: ", err)
-	}
+
 }
