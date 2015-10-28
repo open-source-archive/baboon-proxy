@@ -12,7 +12,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/zalando-techmonkeys/baboon-proxy/client"
 	"github.com/zalando-techmonkeys/baboon-proxy/config"
-	"github.com/zalando/gin-contrib/ginoauth2"
+	"github.com/zalando-techmonkeys/gin-oauth2"
 	"os"
 	"strconv"
 )
@@ -54,7 +54,7 @@ func main() {
 		publicGTM.GET("/wideips/:wideip", client.GTMWipNameList)
 	}
 	privateGTM := app.Group("/api/gtms/:trafficmanager")
-	privateGTM.Use(ginoauth2.Auth(*OAuth2Endpoint, rootusers))
+	privateGTM.Use(ginoauth2.Auth(ginoauth2.UidCheck, *OAuth2Endpoint, rootusers))
 	{
 		privateGTM.POST("/pools", client.GTMPoolPost)
 		privateGTM.POST("/wideips", client.GTMWideipPost)
@@ -77,7 +77,7 @@ func main() {
 		publicLTM.GET("/blockips", client.LTMAddressList)
 	}
 	privateLTM := app.Group("/api/ltms/:lbpair")
-	privateLTM.Use(ginoauth2.Auth(*OAuth2Endpoint, rootusers))
+	privateLTM.Use(ginoauth2.Auth(ginoauth2.UidCheck, *OAuth2Endpoint, rootusers))
 	{
 		privateLTM.POST("/pools", client.LTMPoolPost)
 		privateLTM.POST("/virtuals", client.LTMVirtualServerPost)
@@ -93,7 +93,7 @@ func main() {
 		//To do: privateLTM.DELETE("/datagroups/:direction/:datagroupname", client.LTMDataGroupItemDelete)
 	}
 	emergencyLTM := app.Group("/api/ltms/:lbpair")
-	emergencyLTM.Use(ginoauth2.Auth(*OAuth2Endpoint, emergencyusers))
+	emergencyLTM.Use(ginoauth2.Auth(ginoauth2.UidCheck, *OAuth2Endpoint, emergencyusers))
 	{
 		emergencyLTM.PATCH("/blockips", client.LTMBlockIPPatch)
 		emergencyLTM.PATCH("/whiteips", client.LTMWhiteIPPatch)
