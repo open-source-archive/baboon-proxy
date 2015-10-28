@@ -40,3 +40,7 @@ ltmdevicenames:
   dc-west-ltm01 : 177.177.177.100
   dc-west-ltm02 : 177.177.177.101
 
+backend:
+  f5user: admin
+  f5password: password
+
