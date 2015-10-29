@@ -55,6 +55,5 @@ func Request(method int, u string, body interface{}) (*Response, error) {
 			r, err = sess.Delete(u, nil, nil, nil)
 		}
 	}
-	//Should return a response code and a body text
 	return &Response{r.Status(), r.RawText()}, err
 }
