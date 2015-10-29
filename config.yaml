@@ -1,0 +1,46 @@
+---
+endpoints:
+  AuthURL:  https://token.company.com/ccess_token
+  TokenURL: https://auth.company.com/oauth2/tokeninfo
+
+allowedUsers:
+    - username: employee1
+      fullname: First Employee
+      role: employees
+      group: root
+    - username: employee2
+      fullname: Second Employee
+      role: employees
+      group: root
+    - username: emergencyuser1
+      fullname: First EmergencyUser
+      role: employees
+      group: emergency
+
+security:
+  certFile : ./company.crt
+  keyFile : ./company.key
+  apiFile : ./f5root.json
+
+documentation:
+  ltmdocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/local%20trafficmanager/index.html
+  gtmdocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/global%20trafficmanager/index.html
+  ltmpooldocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/local%20trafficmanager/pools.html
+  ltmpoolmemberdocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/local%20trafficmanager/poolmembers.html
+  ltmvirtualdocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/local%20trafficmanager/virtual-servers.html
+  ltmdatagroupdocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/local%20trafficmanager/datagroups.html
+  ltmaddresslistdocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/local%20trafficmanager/addresslist.html
+  gtmwideipdocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/global%20trafficmanager/wideips.html
+  gtmpooldocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/global%20trafficmanager/pools.html
+  gtmpoolmemberdocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/global%20trafficmanager/poolmembers.html
+
+ltmdevicenames:
+  dc-east-ltm01 : 123.123.123.123
+  dc-east-ltm02 : 123.123.123.124
+  dc-west-ltm01 : 177.177.177.100
+  dc-west-ltm02 : 177.177.177.101
+
+backend:
+  f5user: admin
+  f5password: password
+

@@ -18,15 +18,17 @@ import (
 )
 
 var port *int
+var sslenabled *bool
 
 func usage() {
-	fmt.Fprint(os.Stderr, "usage: baboon-proxy -port=80 -stderrthreshold=[INFO|WARN|FATAL] -log_dir=[string]\n")
+	fmt.Fprint(os.Stderr, "usage: baboon-proxy -port=80 -ssl-enabled=false -stderrthreshold=[INFO|WARN|FATAL] -log_dir=[string]\n")
 	flag.PrintDefaults()
 	os.Exit(2)
 }
 
 func init() {
 	port = flag.Int("port", 80, "Default Port")
+	sslenabled = flag.Bool("ssl-enabled", false, "enable SSL")
 	flag.Usage = usage
 	flag.Parse()
 }
@@ -100,9 +102,10 @@ func main() {
 		emergencyLTM.DELETE("/blockips", client.LTMRemoveBlockIPPatch)
 	}
 	switch {
-	case *port == 443:
-
-		run := app.RunTLS(fmt.Sprintf(":%s", strconv.Itoa(*port)), conf.Security["certFile"], conf.Security["keyFile"])
+	case *sslenabled:
+		run := app.RunTLS(fmt.Sprintf(":%s", strconv.Itoa(*port)),
+			conf.Security["certFile"],
+			conf.Security["keyFile"])
 		if run != nil {
 			fmt.Println("Could not start web server,", run.Error())
 		}
