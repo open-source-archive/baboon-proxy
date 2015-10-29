@@ -1,7 +1,3 @@
-// @APIVersion 1.0.1
-// @GTMaaS and LTMaaS API
-// @GTM and LTM as a Service, deploy faster
-// @Contact nick.juettner@zalando.de
 package main
 
 import (
@@ -17,8 +13,10 @@ import (
 	"strconv"
 )
 
-var port *int
-var sslenabled *bool
+var (
+	port       *int
+	sslenabled *bool
+)
 
 func usage() {
 	fmt.Fprint(os.Stderr, "usage: baboon-proxy -port=80 -ssl-enabled=false -stderrthreshold=[INFO|WARN|FATAL] -log_dir=[string]\n")
@@ -36,6 +34,7 @@ func init() {
 func main() {
 	app := gin.New()
 	conf := config.LoadConfig()
+
 	// Use Logger, Cross-Origin Ressource and GZIP compression middleware
 	app.Use(client.LoggerMiddleware())
 	app.Use(client.CORSMiddleware())
@@ -43,8 +42,8 @@ func main() {
 
 	rootusers, emergencyusers, OAuth2Endpoint, err := config.LoadAuthConf(conf)
 	if err != nil {
-		glog.Errorf("could not load configuration. Reason: %s", err.Message)
-		panic("Cannot load configuration for Baboon. Exiting.")
+		glog.Errorf("Could not load configuration. Reason: %s", err.Message)
+		panic("Could not load configuration for Baboon. Exiting.")
 	}
 	glog.Infof("%+v", rootusers)
 	publicGTM := app.Group("/api/gtms/:trafficmanager")

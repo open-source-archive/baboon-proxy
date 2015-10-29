@@ -20,7 +20,6 @@ allowedUsers:
 security:
   certFile : ./company.crt
   keyFile : ./company.key
-  apiFile : ./f5root.json
 
 documentation:
   ltmdocumentationuri : https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/local%20trafficmanager/index.html
