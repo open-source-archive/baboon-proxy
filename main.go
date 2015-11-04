@@ -21,7 +21,7 @@ var (
 )
 
 func usage() {
-	fmt.Fprint(os.Stderr, "usage: baboon-proxy -port=80 -ssl-enabled=false -ltm-enabled=true -gtm-enabled-true -stderrthreshold=[INFO|WARN|FATAL] -log_dir=[string]\n")
+	fmt.Fprint(os.Stderr, "usage: baboon-proxy -port=80 -ssl-enabled=false -ltm-enabled=false -gtm-enabled=false -stderrthreshold=[INFO|WARN|FATAL] -log_dir=[string]\n")
 	flag.PrintDefaults()
 	os.Exit(2)
 }
