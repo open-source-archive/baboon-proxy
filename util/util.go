@@ -2,7 +2,6 @@ package util
 
 import (
 	"bytes"
-	"github.com/zalando-techmonkeys/baboon-proxy/common"
 	"net"
 	"strings"
 )
@@ -25,7 +24,7 @@ func ReplaceColon(s string) string {
 // ReplaceLTMUritoDeviceURI takes local taffic manager path
 // and replaces it with device path
 func ReplaceLTMUritoDeviceURI(s string) string {
-	return strings.Replace(s, common.LtmURI, common.DeviceURI, -1)
+	return strings.Replace(s, "/mgmt/tm/ltm", "/mgmt/tm/cm/device", -1)
 }
 
 // ReplaceGTMWipUritoGTMPoolURI replace wideips with pools
