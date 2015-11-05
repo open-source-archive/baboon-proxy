@@ -1,6 +1,7 @@
 package ltm
 
 import (
+	"fmt"
 	"github.com/zalando-techmonkeys/baboon-proxy/backend"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
 	"net/url"
@@ -29,7 +30,7 @@ type IRules struct {
 func ShowLTMFWRules(host, vserver string) *IRules {
 	fwrules := new(IRules)
 	u, _ := url.Parse(host)
-	u.Path = path.Join(u.Path, "virtual/~Common~"+vserver, "/fw-rules")
+	u.Path = path.Join(u.Path, fmt.Sprintf("virtual/~%s~%s/fw-rules", ltmPartition, vserver))
 	backend.Request(common.GET, u.String(), &fwrules)
 	return fwrules
 }

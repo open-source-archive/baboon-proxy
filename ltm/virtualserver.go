@@ -1,6 +1,7 @@
 package ltm
 
 import (
+	"fmt"
 	"github.com/zalando-techmonkeys/baboon-proxy/backend"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
 	"net/url"
@@ -105,7 +106,7 @@ func ShowLTMVirtualServerName(host, vserver string) *VirtualServer {
 	// Declaration LTM virtual server name
 	ltmvirtualservername := new(VirtualServer)
 	u, _ := url.Parse(host)
-	u.Path = path.Join(u.Path, "virtual/~Common~"+vserver)
+	u.Path = path.Join(u.Path, fmt.Sprintf("virtual/~%s~%s", ltmPartition, vserver))
 	backend.Request(common.GET, u.String(), &ltmvirtualservername)
 	return ltmvirtualservername
 }

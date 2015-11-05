@@ -1,10 +1,15 @@
 package ltm
 
 import (
+	"fmt"
 	"github.com/zalando-techmonkeys/baboon-proxy/backend"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
 	"net/url"
 	"path"
+)
+
+var (
+	ltmPartition = common.Conf.Partition["ltm"]
 )
 
 /*
@@ -139,7 +144,7 @@ func ShowLTMPool(host, pool string) *Pool {
 	// Declaration LTM Pool
 	ltmpool := new(Pool)
 	u, _ := url.Parse(host) //TODO error handling here
-	u.Path = path.Join(u.Path, "pool/~Common~"+pool)
+	u.Path = path.Join(u.Path, fmt.Sprintf("pool/~%s~%s", ltmPartition, pool))
 	backend.Request(common.GET, u.String(), &ltmpool)
 	return ltmpool
 }
@@ -149,7 +154,7 @@ func ShowLTMPoolMember(host, pool string) *PoolMembers {
 	// Declaration LTM Pool Member
 	ltmpoolmember := new(PoolMembers)
 	u, _ := url.Parse(host) //TODO: error handling
-	u.Path = path.Join(u.Path, "pool/~Common~"+pool, "/members")
+	u.Path = path.Join(u.Path, fmt.Sprintf("pool/~%s~%s/members", ltmPartition, pool))
 	poolmemberURL := u.String()
 	backend.Request(common.GET, poolmemberURL, &ltmpoolmember)
 	return ltmpoolmember
@@ -169,7 +174,7 @@ func PostLTMPool(host string, json *CreatePool) (*backend.Response, error) {
 // PutLTMPool modfiy pool like health check
 func PutLTMPool(host, poolname string, json *ModifyPool) (*backend.Response, error) {
 	u, _ := url.Parse(host)
-	u.Path = path.Join(u.Path, "pool/~Common~"+poolname)
+	u.Path = path.Join(u.Path, fmt.Sprintf("pool/~%s~%s", ltmPartition, poolname))
 	r, err := backend.Request(common.PUT, u.String(), &json)
 	if err != nil {
 		return nil, err
@@ -180,7 +185,7 @@ func PutLTMPool(host, poolname string, json *ModifyPool) (*backend.Response, err
 // DeleteLTMPool delete a pool
 func DeleteLTMPool(host, poolname string) (*backend.Response, error) {
 	u, _ := url.Parse(host)
-	u.Path = path.Join(u.Path, "pool/~Common~"+poolname)
+	u.Path = path.Join(u.Path, fmt.Sprintf("pool/~%s~%s", ltmPartition, poolname))
 	r, err := backend.Request(common.DELETE, u.String(), nil)
 	if err != nil {
 		return nil, err
@@ -191,7 +196,7 @@ func DeleteLTMPool(host, poolname string) (*backend.Response, error) {
 // PostLTMPoolMember add member to a pool
 func PostLTMPoolMember(host, poolname string, json *CreatePoolMember) (*backend.Response, error) {
 	u, _ := url.Parse(host)
-	u.Path = path.Join(u.Path, "pool/~Common~"+poolname, "/members")
+	u.Path = path.Join(u.Path, fmt.Sprintf("pool/~%s~%s/members", ltmPartition, poolname))
 	r, err := backend.Request(common.POST, u.String(), &json)
 	if err != nil {
 		return nil, err
@@ -202,7 +207,7 @@ func PostLTMPoolMember(host, poolname string, json *CreatePoolMember) (*backend.
 // PutLTMPoolMember modify status of pool member
 func PutLTMPoolMember(host, poolname, member, status string) (*backend.Response, error) {
 	u, _ := url.Parse(host)
-	u.Path = path.Join(u.Path, "pool/~Common~"+poolname, "/members/~Common~"+member)
+	u.Path = path.Join(u.Path, fmt.Sprintf("pool/~%s~%s/members/~%s~%s", ltmPartition, poolname, ltmPartition, member))
 	memberstatus := ModifyPoolMemberStatus{}
 	switch status {
 	case "enabled":
@@ -229,7 +234,7 @@ func PutLTMPoolMember(host, poolname, member, status string) (*backend.Response,
 // DeleteLTMPoolMember delete pool member
 func DeleteLTMPoolMember(host, poolname, poolmember string) (*backend.Response, error) {
 	u, _ := url.Parse(host)
-	u.Path = path.Join(u.Path, "pool/~Common~"+poolname, "/members/~Common~"+poolmember)
+	u.Path = path.Join(u.Path, fmt.Sprintf("pool/~%s~%s/members/~%s~%s", ltmPartition, poolname, ltmPartition, poolmember))
 	r, err := backend.Request(common.DELETE, u.String(), nil)
 	if err != nil {
 		return nil, err

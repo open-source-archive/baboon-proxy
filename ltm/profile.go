@@ -1,6 +1,7 @@
 package ltm
 
 import (
+	"fmt"
 	"github.com/zalando-techmonkeys/baboon-proxy/backend"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
 	"net/url"
@@ -30,7 +31,7 @@ func ShowLTMProfile(host, vserver string) *Profiles {
 	// Declaration LTM Profile
 	ltmprofile := new(Profiles)
 	u, _ := url.Parse(host)
-	u.Path = path.Join(u.Path, "virtual/~Common~"+vserver, "/profiles")
+	u.Path = path.Join(u.Path, fmt.Sprintf("virtual/~%s~%s/profiles", ltmPartition, vserver))
 	backend.Request(common.GET, u.String(), &ltmprofile)
 	return ltmprofile
 }

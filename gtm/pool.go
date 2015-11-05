@@ -8,6 +8,11 @@ import (
 	"path"
 )
 
+var (
+	gtmPartition = common.Conf.Partition["gtm"]
+	ltmPartition = common.Conf.Partition["ltm"]
+)
+
 // Pools struct provides information about multiple pools
 type Pools struct {
 	Kind  string `json:"kind"`
@@ -120,7 +125,7 @@ func ShowGTMPool(host, pool string) *Pool {
 	gtmpool := new(Pool)
 	u, _ := url.Parse(host)
 	u.Scheme = common.Protocol
-	u.Path = path.Join(u.Path, common.Gtmpoolsuri, "/~Common~"+pool)
+	u.Path = path.Join(u.Path, common.Gtmpoolsuri, fmt.Sprintf("/~%s~%s", gtmPartition, pool))
 	backend.Request(common.GET, u.String(), &gtmpool)
 	return gtmpool
 }
@@ -131,7 +136,7 @@ func ShowGTMPoolMembers(host, pool string) *PoolMembers {
 	gtmpoolmembers := new(PoolMembers)
 	u, _ := url.Parse(host)
 	u.Scheme = common.Protocol
-	u.Path = path.Join(u.Path, common.Gtmpoolsuri, "/~Common~"+pool, "/members")
+	u.Path = path.Join(u.Path, common.Gtmpoolsuri, fmt.Sprintf("/~%s~%s/members", gtmPartition, pool))
 	backend.Request(common.GET, u.String(), &gtmpoolmembers)
 	return gtmpoolmembers
 }
@@ -143,9 +148,9 @@ func PostGTMPool(host string, json *CreatePool) (*backend.Response, error) {
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri)
 
 	for i := range json.Members {
-		json.Members[i].Partition = "Common"
-		json.Members[i].Subpath = json.Members[i].Loadbalancer + ":/Common"
-		json.Members[i].Fullpath = "/Common/" + json.Members[i].Loadbalancer + ":/Common/" + json.Members[i].Name
+		json.Members[i].Partition = gtmPartition
+		json.Members[i].Subpath = fmt.Sprintf("%s:/%s", json.Members[i].Loadbalancer, gtmPartition)
+		json.Members[i].Fullpath = fmt.Sprintf("/%s/%s:/%s/%s", gtmPartition, json.Members[i].Loadbalancer, ltmPartition, json.Members[i].Name)
 		json.Members[i].Loadbalancer = ""
 	}
 	r, err := backend.Request(common.POST, u.String(), &json)
@@ -161,7 +166,7 @@ func DeleteGTMPool(host, pool string) (*backend.Response, error) {
 	u, _ := url.Parse(host)
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri)
-	u.Path = path.Join(u.Path, "/~Common~"+pool)
+	u.Path = path.Join(u.Path, fmt.Sprintf("/~%s~", gtmPartition, pool))
 	r, err := backend.Request(common.DELETE, u.String(), nil)
 	if err != nil {
 		return nil, err
