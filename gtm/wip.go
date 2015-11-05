@@ -1,6 +1,7 @@
 package gtm
 
 import (
+	"fmt"
 	"github.com/zalando-techmonkeys/baboon-proxy/backend"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
 	"net/url"
@@ -95,7 +96,7 @@ func DeleteGTMWip(host, wideip string) (*backend.Response, error) {
 	u, _ := url.Parse(host)
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmwipsuri)
-	u.Path = path.Join(u.Path, "/~Common~"+wideip)
+	u.Path = path.Join(u.Path, fmt.Sprintf("/~%s~%s", gtmPartition, wideip))
 	r, err := backend.Request(common.DELETE, u.String(), nil)
 	if err != nil {
 		return nil, err

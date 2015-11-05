@@ -2,34 +2,32 @@ package gtm
 
 import (
 	"fmt"
-	"github.com/zalando-techmonkeys/baboon-proxy/config"
+	"github.com/zalando-techmonkeys/baboon-proxy/common"
 	"net"
 	"time"
 )
-
-var conf *config.Config
-
-func init() {
-	conf = config.LoadConfig()
-}
 
 // Trafficmanager matches internal (ITM)
 // or external (GTM)
 // Check if ITM/GTM is available
 // Required to create WIPs and Pools
 func Trafficmanager(cluster string) (string, error) {
-	var dnsserver string
-	var seconds = 2
-	var tm map[string]string
+	var (
+		dnsserver         string
+		seconds           = 2
+		tm                map[string]string
+		internalListeners = common.Conf.Internalgtmlisteners
+		externalListeners = common.Conf.Externalgtmlisteners
+	)
 
 	switch cluster {
 	case "itm":
 		{
-			tm = conf.Internalgtmdevicenames
+			tm = internalListeners
 		}
 	case "gtm":
 		{
-			tm = conf.Externalgtmdevicenames
+			tm = externalListeners
 		}
 	default:
 		{

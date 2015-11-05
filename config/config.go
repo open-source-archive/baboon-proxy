@@ -23,14 +23,15 @@ type User struct {
 
 // Config contain fields for config yaml file
 type Config struct {
-	Endpoints              map[string]string
-	AllowedUsers           []User
-	Security               map[string]string
-	Documentation          map[string]string
-	Ltmdevicenames         map[string]string
-	Externalgtmdevicenames map[string]string
-	Internalgtmdevicenames map[string]string
-	Backend                map[string]string
+	Endpoints            map[string]string
+	AllowedUsers         []User
+	Security             map[string]string
+	Documentation        map[string]string
+	Ltmdevicenames       map[string]string
+	Externalgtmlisteners map[string]string
+	Internalgtmlisteners map[string]string
+	Backend              map[string]string
+	Partition            map[string]string
 }
 
 // ConfigError contain fields of config error handling

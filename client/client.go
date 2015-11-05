@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang/glog"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
-	"github.com/zalando-techmonkeys/baboon-proxy/config"
 	"github.com/zalando-techmonkeys/baboon-proxy/gtm"
 	"github.com/zalando-techmonkeys/baboon-proxy/ltm"
 	"github.com/zalando-techmonkeys/baboon-proxy/util"
@@ -17,13 +16,7 @@ import (
 	"time"
 )
 
-var conf *config.Config //shared state for configuration
-
 var returnerror ltm.ErrorLTM
-
-func init() {
-	conf = config.LoadConfig()
-}
 
 // GTMWipDelete delete wide ip
 func GTMWipDelete(c *gin.Context) {
@@ -37,7 +30,7 @@ func GTMWipDelete(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "Wide IP deleted", wipdelete.Name,
-		returnerror.ErrorMessage(), conf.Documentation["gtmwideipdocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["gtmwideipdocumentationuri"], c)
 }
 
 // GTMWipList show all wide ips
@@ -84,8 +77,8 @@ func GTMWipNameList(c *gin.Context) {
 // LTMPoolList show local traffic manager pools
 func LTMPoolList(c *gin.Context) {
 	lbpair := c.Params.ByName("lbpair")
-	glog.Infof("%v", conf.Ltmdevicenames)
-	f5url := ltm.Loadbalancer(lbpair, conf.Ltmdevicenames)
+	glog.Infof("%v", common.Conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(lbpair, common.Conf.Ltmdevicenames)
 	poollist := ltm.ShowLTMPools(f5url)
 	for i, v := range poollist.Items {
 		u := new(url.URL)
@@ -116,7 +109,7 @@ func GTMPoolList(c *gin.Context) {
 
 // LTMPoolNameList show specific local traffic manager pool
 func LTMPoolNameList(c *gin.Context) {
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	poolname := c.Params.ByName("poolname")
 	poolnamelist := ltm.ShowLTMPool(f5url, poolname)
 	u := new(url.URL)
@@ -157,7 +150,7 @@ func GTMPoolMemberList(c *gin.Context) {
 
 // LTMPoolMemberList show local traffic manager members in a specific pool
 func LTMPoolMemberList(c *gin.Context) {
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	poolname := c.Params.ByName("poolname")
 	poolmemberlist := ltm.ShowLTMPoolMember(f5url, poolname)
 	c.JSON(http.StatusOK, gin.H{"message": poolmemberlist})
@@ -165,7 +158,7 @@ func LTMPoolMemberList(c *gin.Context) {
 
 // LTMDeviceList show local traffic manager devices
 func LTMDeviceList(c *gin.Context) {
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	devicelist := ltm.ShowLTMDevice(f5url)
 	c.JSON(http.StatusOK, gin.H{"message": devicelist})
 }
@@ -173,15 +166,15 @@ func LTMDeviceList(c *gin.Context) {
 // LTMDeviceNameList show local traffic manager specific device
 func LTMDeviceNameList(c *gin.Context) {
 	device := c.Params.ByName("devicename")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
-	devicenamelist := ltm.ShowLTMDeviceName(device, f5url, conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	devicenamelist := ltm.ShowLTMDeviceName(device, f5url, common.Conf.Ltmdevicenames)
 	c.JSON(http.StatusOK, gin.H{"message": devicenamelist})
 }
 
 // LTMVirtualServerList show local traffic manager virtual servers
 func LTMVirtualServerList(c *gin.Context) {
 	lbpair := c.Params.ByName("lbpair")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	virtualserverlist := ltm.ShowLTMVirtualServer(f5url)
 	for i, v := range virtualserverlist.Items {
 		u1 := new(url.URL)
@@ -206,7 +199,7 @@ func LTMVirtualServerList(c *gin.Context) {
 func LTMVirtualServerNameList(c *gin.Context) {
 	lbpair := c.Params.ByName("lbpair")
 	vservername := c.Params.ByName("virtual")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	virtualservernamelist := ltm.ShowLTMVirtualServerName(f5url, vservername)
 	u1 := new(url.URL)
 	u1.Scheme = common.Protocol
@@ -228,7 +221,7 @@ func LTMVirtualServerNameList(c *gin.Context) {
 // LTMProfileList show local traffic manager profiles of a specific virtual server
 func LTMProfileList(c *gin.Context) {
 	vservername := c.Params.ByName("virtual")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	profilelist := ltm.ShowLTMProfile(f5url, vservername)
 	c.JSON(http.StatusOK, gin.H{"message": profilelist})
 }
@@ -236,7 +229,7 @@ func LTMProfileList(c *gin.Context) {
 // LTMFWRuleList show local traffic manager iRules of a specific virtual server
 func LTMFWRuleList(c *gin.Context) {
 	vservername := c.Params.ByName("virtual")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	rulelist := ltm.ShowLTMFWRules(f5url, vservername)
 	c.JSON(http.StatusOK, gin.H{"message": rulelist})
 }
@@ -244,7 +237,7 @@ func LTMFWRuleList(c *gin.Context) {
 // LTMDataGroupList show local traffic manager internal data groups
 func LTMDataGroupList(c *gin.Context) {
 	direction := common.InternalDataGroup
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	datagrouplist := ltm.ShowLTMDataGroup(f5url, direction)
 	c.JSON(http.StatusOK, gin.H{"message": datagrouplist})
 }
@@ -253,7 +246,7 @@ func LTMDataGroupList(c *gin.Context) {
 func LTMDataGroupNameList(c *gin.Context) {
 	direction := common.InternalDataGroup
 	datagroupname := c.Params.ByName("datagroupname")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	datagroupnamelist := ltm.ShowLTMDataGroupName(f5url, direction, datagroupname)
 	c.JSON(http.StatusOK, gin.H{"message": datagroupnamelist})
 }
@@ -261,7 +254,7 @@ func LTMDataGroupNameList(c *gin.Context) {
 // LTMVirtualServerPost create virtual server
 func LTMVirtualServerPost(c *gin.Context) {
 	var vservercreate ltm.CreateVirtualServer
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 
 	c.Bind(&vservercreate)
 	res, _ := ltm.PostLTMVirtualServer(f5url, &vservercreate)
@@ -270,7 +263,7 @@ func LTMVirtualServerPost(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "Virtual server added", vservercreate.Name,
-		returnerror.ErrorMessage(), conf.Documentation["ltmvirtualdocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmvirtualdocumentationuri"], c)
 }
 
 // LTMSSLKeyPost install a new ssl key on local traffic manager
@@ -302,10 +295,8 @@ func LTMSSLKeyPost(c *gin.Context) {
 // LTMPoolPost create a new pool with members and a monitoring check on a local traffic manager
 func LTMPoolPost(c *gin.Context) {
 	var poolcreate ltm.CreatePool
-	if !(len(poolcreate.Partition) > 0) {
-		poolcreate.Partition = "Common"
-	}
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	c.Bind(&poolcreate)
 	res, _ := ltm.PostLTMPool(f5url, &poolcreate)
 	json.Unmarshal([]byte(res.Body), &returnerror)
@@ -313,7 +304,7 @@ func LTMPoolPost(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "Pool created", poolcreate.Name,
-		returnerror.ErrorMessage(), conf.Documentation["ltmpooldocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmpooldocumentationuri"], c)
 }
 
 // GTMPoolPost create a new wide IP pool with members and a monitoring check on a global traffic manager
@@ -328,7 +319,7 @@ func GTMPoolPost(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "Pool created", poolcreate.Name,
-		returnerror.ErrorMessage(), conf.Documentation["gtmpooldocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["gtmpooldocumentationuri"], c)
 }
 
 // GTMWideipPost create new wide IP on a global traffic manager
@@ -343,7 +334,7 @@ func GTMWideipPost(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "WideIP created", wideipcreate.Name,
-		returnerror.ErrorMessage(), conf.Documentation["gtmwideipdocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["gtmwideipdocumentationuri"], c)
 }
 
 // LTMPoolMemberPost add new members to a specific pool on a local traffic manager
@@ -351,7 +342,7 @@ func LTMPoolMemberPost(c *gin.Context) {
 	var poolmembercreate ltm.CreatePoolMember
 
 	poolname := c.Params.ByName("poolname")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 
 	c.Bind(&poolmembercreate)
 	res, _ := ltm.PostLTMPoolMember(f5url, poolname, &poolmembercreate)
@@ -361,14 +352,14 @@ func LTMPoolMemberPost(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "Pool member added", poolmembercreate.Name,
-		returnerror.ErrorMessage(), conf.Documentation["ltmpoolmemberdocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 }
 
 // LTMPoolPut modify pool (old ones will be deleted) or change monitoring
 func LTMPoolPut(c *gin.Context) {
 	var poolmodify ltm.ModifyPool
 
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 
 	c.Bind(&poolmodify)
 	res, _ := ltm.PutLTMPool(f5url, poolmodify.Name, &poolmodify)
@@ -378,13 +369,13 @@ func LTMPoolPut(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "Pool modified", poolmodify.Name,
-		returnerror.ErrorMessage(), conf.Documentation["ltmpooldocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmpooldocumentationuri"], c)
 }
 
 // LTMPoolDelete delete a pool on a local traffic manager
 func LTMPoolDelete(c *gin.Context) {
 	var pooldelete ltm.RemovePool
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	c.Bind(&pooldelete)
 	res, _ := ltm.DeleteLTMPool(f5url, pooldelete.Name)
 	json.Unmarshal([]byte(res.Body), &returnerror)
@@ -392,7 +383,7 @@ func LTMPoolDelete(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "Pool deleted", pooldelete.Name,
-		returnerror.ErrorMessage(), conf.Documentation["ltmpooldocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmpooldocumentationuri"], c)
 }
 
 // GTMPoolDelete delete a pool on a global traffic manager
@@ -406,14 +397,14 @@ func GTMPoolDelete(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "Pool deleted", pooldelete.Name,
-		returnerror.ErrorMessage(), conf.Documentation["gtmpooldocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["gtmpooldocumentationuri"], c)
 }
 
 // LTMPoolMemberPut modify pool members on a local traffic manager (enabled, disabled, force-offline)
 func LTMPoolMemberPut(c *gin.Context) {
 	var poolmembermodify ltm.ModifyPoolMember
 	poolname := c.Params.ByName("poolname")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	c.Bind(&poolmembermodify)
 	res, _ := ltm.PutLTMPoolMember(f5url, poolname, poolmembermodify.Name, poolmembermodify.Status)
 	json.Unmarshal([]byte(res.Body), &returnerror)
@@ -421,14 +412,14 @@ func LTMPoolMemberPut(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "Pool member modified", poolmembermodify.Name,
-		returnerror.ErrorMessage(), conf.Documentation["ltmpoolmemberdocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 }
 
 // LTMPoolMemberDelete delete specific pool members on a local traffic manager
 func LTMPoolMemberDelete(c *gin.Context) {
 	var poolmemberdelete ltm.RemovePoolMember
 	poolname := c.Params.ByName("poolname")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	c.Bind(&poolmemberdelete)
 	res, _ := ltm.DeleteLTMPoolMember(f5url, poolname, poolmemberdelete.Name)
 	json.Unmarshal([]byte(res.Body), &returnerror)
@@ -436,14 +427,14 @@ func LTMPoolMemberDelete(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "Pool member deleted", poolmemberdelete.Name,
-		returnerror.ErrorMessage(), conf.Documentation["ltmpoolmemberdocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 }
 
 // LTMDataGroupPost add new internal datagroup on a local traffic manager
 func LTMDataGroupPost(c *gin.Context) {
 	var datagroupcreate ltm.CreateDataGroup
 	direction := common.InternalDataGroup
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	c.Bind(&datagroupcreate)
 	res, _ := ltm.PostLTMDataGroup(f5url, direction, &datagroupcreate)
 	json.Unmarshal([]byte(res.Body), &returnerror)
@@ -451,14 +442,14 @@ func LTMDataGroupPost(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "Datagroup added", datagroupcreate.Name,
-		returnerror.ErrorMessage(), conf.Documentation["ltmdatagroupdocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 }
 
 // LTMDataGroupDelete delete a internal datagroup on a local traffic manager
 func LTMDataGroupDelete(c *gin.Context) {
 	var datagroupdelete ltm.RemoveDataGroup
 	direction := common.InternalDataGroup
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	c.Bind(&datagroupdelete)
 	res, _ := ltm.DeleteLTMDataGroup(f5url, direction, datagroupdelete.Name)
 	json.Unmarshal([]byte(res.Body), &returnerror)
@@ -466,7 +457,7 @@ func LTMDataGroupDelete(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "Datagroup deleted", datagroupdelete.Name,
-		returnerror.ErrorMessage(), conf.Documentation["ltmdatagroupdocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 }
 
 // LTMDataGroupItemPut remove all existing records in a datagroup and add new records (ip or string)
@@ -476,7 +467,7 @@ func LTMDataGroupItemPut(c *gin.Context) {
 	direction := common.InternalDataGroup
 	datagroupname := c.Params.ByName("datagroupname")
 
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 
 	c.Bind(&datagroupitemcreate)
 	res, _ := ltm.PatchLTMDataGroupItem(f5url, direction, datagroupname, &datagroupitemcreate)
@@ -485,7 +476,7 @@ func LTMDataGroupItemPut(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "Datagroup item added in", datagroupname,
-		returnerror.ErrorMessage(), conf.Documentation["ltmdatagroupdocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 }
 
 // LTMDataGroupItemPatch add an item to a datagroup (ip or string) on a local traffic manager
@@ -494,7 +485,7 @@ func LTMDataGroupItemPatch(c *gin.Context) {
 	direction := common.InternalDataGroup
 	datagroupname := c.Params.ByName("datagroupname")
 
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 
 	c.Bind(&datagroupitemcreate)
 	res, _ := ltm.PatchLTMDataGroupItem(f5url, direction, datagroupname, &datagroupitemcreate)
@@ -503,13 +494,13 @@ func LTMDataGroupItemPatch(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "Datagroup item added in", datagroupname,
-		returnerror.ErrorMessage(), conf.Documentation["ltmdatagroupdocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 }
 
 // LTMAddressList show local traffic blocked ip addresses
 func LTMAddressList(c *gin.Context) {
 	lbpair := c.Params.ByName("lbpair")
-	f5url := ltm.Loadbalancer(lbpair, conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(lbpair, common.Conf.Ltmdevicenames)
 	f5url = strings.Replace(f5url, common.LtmURI, "", -1)
 	addresslist := ltm.ShowLTMAddressList(f5url, common.BlackList)
 	c.JSON(http.StatusOK, gin.H{"message": addresslist})
@@ -519,7 +510,7 @@ func LTMAddressList(c *gin.Context) {
 func LTMBlockIPPatch(c *gin.Context) {
 	var blockips ltm.CreateAddresses
 
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	f5url = strings.Replace(f5url, common.LtmURI, "", -1)
 	c.Bind(&blockips)
 	res, err := ltm.PatchLTMBlockAddresses(f5url, &blockips)
@@ -531,7 +522,7 @@ func LTMBlockIPPatch(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "IP(s) blocked successfully", fmt.Sprintf("%+v", blockips),
-		returnerror.ErrorMessage(), conf.Documentation["ltmaddresslistdocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 }
 
 // LTMWhiteIPPatch add ips which will be whitelisted
@@ -539,7 +530,7 @@ func LTMBlockIPPatch(c *gin.Context) {
 func LTMWhiteIPPatch(c *gin.Context) {
 	var whiteips ltm.CreateAddresses
 
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	f5url = strings.Replace(f5url, common.LtmURI, "", -1)
 	c.Bind(&whiteips)
 	res, err := ltm.PatchLTMWhiteAddresses(f5url, &whiteips)
@@ -551,14 +542,14 @@ func LTMWhiteIPPatch(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "IP(s) whitelisted successfully", fmt.Sprintf("%+v", whiteips),
-		returnerror.ErrorMessage(), conf.Documentation["ltmaddresslistdocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 }
 
 // LTMRemoveBlockIPPatch remove ips which are currently blocked
 func LTMRemoveBlockIPPatch(c *gin.Context) {
 	var unblockips ltm.DeleteAddresses
 
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), conf.Ltmdevicenames)
+	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	f5url = strings.Replace(f5url, common.LtmURI, "", -1)
 	c.Bind(&unblockips)
 	res, err := ltm.DeleteLTMBlockAddresses(f5url, &unblockips)
@@ -570,7 +561,7 @@ func LTMRemoveBlockIPPatch(c *gin.Context) {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "IP(s) removed successfully", fmt.Sprintf("%+v", unblockips),
-		returnerror.ErrorMessage(), conf.Documentation["ltmaddresslistdocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 }
 
 // LoggerMiddleware log user activity

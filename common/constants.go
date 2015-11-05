@@ -1,5 +1,7 @@
 package common
 
+import "github.com/zalando-techmonkeys/baboon-proxy/config"
+
 //Constants for HTTP methods
 const (
 	GET = iota + 1
@@ -8,6 +10,8 @@ const (
 	PATCH
 	DELETE
 )
+
+var Conf *config.Config
 
 // Protocol Scheme
 const Protocol = "https"
@@ -57,3 +61,7 @@ const BlackList = "black_listed_ipv4_addr"
 
 // WhiteList Local Traffic Manager WhiteList Address List
 const WhiteList = "white_listed_ipv4_addr"
+
+func init() {
+	Conf = config.LoadConfig()
+}

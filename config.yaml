@@ -39,7 +39,22 @@ ltmdevicenames:
   dc-west-ltm01 : 177.177.177.100
   dc-west-ltm02 : 177.177.177.101
 
+externalgtmlisteners:
+  dc-east-gtm01: 11.11.11.11:53
+  dc-east-gtm02: 11.11.11.12:53
+  dc-west-gtm01: 13.13.13.13:53
+  dc-west-gtm02: 13.13.13.14:53
+
+internalgtmlisteners:
+  dc-east-itm01: 10.0.0.1:53
+  dc-east-itm02: 10.0.0.2:53
+  dc-west-itm01: 192.168.0.1:53
+  dc-west-itm02: 192.168.0.2:53
+
 backend:
   f5user: admin
   f5password: password
 
+partition:
+  gtm: Common 
+  ltm: Common
