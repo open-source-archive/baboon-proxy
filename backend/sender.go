@@ -24,14 +24,13 @@ func Request(method int, u string, body interface{}) (*Response, error) {
 		err error
 		r   *napping.Response
 	)
-	if method == common.GET {
-		glog.Infof("Contacting host: %s", u)
-	} else {
+	glog.Infof("Contacting host: %s", u)
+	if method != common.GET {
 		data, err := json.Marshal(body)
 		if err != nil {
 			return nil, err
 		}
-		glog.Infof("Contacting host: %s json data %s", u, string(data))
+		glog.Infof("Contacting host: %s json data %v+", u, string(data))
 	}
 	switch method {
 	case common.GET:

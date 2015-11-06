@@ -59,8 +59,8 @@ type VirtualServer struct {
 	VsIndex           int      `json:"vsIndex"`
 	Rules             []string `json:"rules"`
 	Vlans             []string `json:"vlans"`
-	PoolsReference    string   `json:"poolsReference"`
-	ProfilesReference string   `json:"profilesReference"`
+	PoolsReference    string   `json:"poolReference"`
+	ProfilesReference string   `json:"profileReference"`
 	FwRulesReference  string   `json:"fwReference"`
 	Persist           []struct {
 		Name      string `json:"name"`
@@ -92,28 +92,43 @@ type CreateVirtualServer struct {
 }
 
 // ShowLTMVirtualServer show all virtual server
-func ShowLTMVirtualServer(host string) *VirtualServers {
+func ShowLTMVirtualServer(host string) (*VirtualServers, error) {
 	// Declaration LTM virtual server
 	ltmvirtualserver := new(VirtualServers)
-	u, _ := url.Parse(host)
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = path.Join(u.Path, "virtual")
-	backend.Request(common.GET, u.String(), ltmvirtualserver)
-	return ltmvirtualserver
+	_, err = backend.Request(common.GET, u.String(), ltmvirtualserver)
+	if err != nil {
+		return nil, err
+	}
+	return ltmvirtualserver, nil
 }
 
 // ShowLTMVirtualServerName show specific virtual server
-func ShowLTMVirtualServerName(host, vserver string) *VirtualServer {
+func ShowLTMVirtualServerName(host, vserver string) (*VirtualServer, error) {
 	// Declaration LTM virtual server name
 	ltmvirtualservername := new(VirtualServer)
-	u, _ := url.Parse(host)
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = path.Join(u.Path, fmt.Sprintf("virtual/~%s~%s", ltmPartition, vserver))
-	backend.Request(common.GET, u.String(), &ltmvirtualservername)
-	return ltmvirtualservername
+	_, err = backend.Request(common.GET, u.String(), &ltmvirtualservername)
+	if err != nil {
+		return nil, err
+	}
+	return ltmvirtualservername, nil
 }
 
 // PostLTMVirtualServer create a new virtual server
 func PostLTMVirtualServer(host string, json *CreateVirtualServer) (*backend.Response, error) {
-	u, _ := url.Parse(host)
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = path.Join(u.Path, "virtual")
 	r, err := backend.Request(common.POST, u.String(), &json)
 	if err != nil {
