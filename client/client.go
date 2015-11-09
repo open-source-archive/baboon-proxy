@@ -174,8 +174,11 @@ func LTMDeviceNameList(c *gin.Context) {
 // LTMVirtualServerList show local traffic manager virtual servers
 func LTMVirtualServerList(c *gin.Context) {
 	lbpair := c.Params.ByName("lbpair")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
-	virtualserverlist := ltm.ShowLTMVirtualServer(f5url)
+	f5url := ltm.Loadbalancer(lbpair, common.Conf.Ltmdevicenames)
+	virtualserverlist, err := ltm.ShowLTMVirtualServer(f5url)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	for i, v := range virtualserverlist.Items {
 		u1 := new(url.URL)
 		u1.Scheme = common.Protocol
@@ -199,8 +202,11 @@ func LTMVirtualServerList(c *gin.Context) {
 func LTMVirtualServerNameList(c *gin.Context) {
 	lbpair := c.Params.ByName("lbpair")
 	vservername := c.Params.ByName("virtual")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
-	virtualservernamelist := ltm.ShowLTMVirtualServerName(f5url, vservername)
+	f5url := ltm.Loadbalancer(lbpair, common.Conf.Ltmdevicenames)
+	virtualservernamelist, err := ltm.ShowLTMVirtualServerName(f5url, vservername)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	u1 := new(url.URL)
 	u1.Scheme = common.Protocol
 	u1.Path = path.Join(c.Request.Host, c.Request.RequestURI, common.ProfilesURI)
@@ -257,7 +263,10 @@ func LTMVirtualServerPost(c *gin.Context) {
 	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 
 	c.Bind(&vservercreate)
-	res, _ := ltm.PostLTMVirtualServer(f5url, &vservercreate)
+	res, err := ltm.PostLTMVirtualServer(f5url, &vservercreate)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
 	if res.Status == 200 {
 		res.Status = 201
@@ -515,7 +524,7 @@ func LTMBlockIPPatch(c *gin.Context) {
 	c.Bind(&blockips)
 	res, err := ltm.PatchLTMBlockAddresses(f5url, &blockips)
 	if err != nil {
-		glog.Infof("%s", err)
+		glog.Errorf("%s", err)
 	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
 	if res.Status == 200 {
@@ -535,7 +544,7 @@ func LTMWhiteIPPatch(c *gin.Context) {
 	c.Bind(&whiteips)
 	res, err := ltm.PatchLTMWhiteAddresses(f5url, &whiteips)
 	if err != nil {
-		glog.Infof("%s", err)
+		glog.Errorf("%s", err)
 	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
 	if res.Status == 200 {
@@ -554,7 +563,7 @@ func LTMRemoveBlockIPPatch(c *gin.Context) {
 	c.Bind(&unblockips)
 	res, err := ltm.DeleteLTMBlockAddresses(f5url, &unblockips)
 	if err != nil {
-		glog.Infof("%s", err)
+		glog.Errorf("%s", err)
 	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
 	if res.Status == 200 {
