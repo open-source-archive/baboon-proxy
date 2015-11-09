@@ -30,7 +30,7 @@ func Request(method int, u string, body interface{}) (*Response, error) {
 		if err != nil {
 			return nil, err
 		}
-		glog.Infof("Contacting host: %s json data %v+", u, string(data))
+		glog.Infof("Contacting host: %s, JSON data %s", u, string(data))
 	}
 	switch method {
 	case common.GET:
