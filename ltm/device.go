@@ -60,18 +60,21 @@ type Device struct {
 
 // ShowLTMDevice returns information
 // of loadbalancer devices
-func ShowLTMDevice(inputURL string) *Devices {
+func ShowLTMDevice(inputURL string) (*Devices, error) {
 	// Declaration LTM Device
 	ltmdevice := new(Devices)
 	deviceURL := util.ReplaceLTMUritoDeviceURI(inputURL)
 	fmt.Println(deviceURL)
-	backend.Request(common.GET, deviceURL, &ltmdevice)
-	return ltmdevice
+	_, err := backend.Request(common.GET, deviceURL, &ltmdevice)
+	if err != nil {
+		return nil, err
+	}
+	return ltmdevice, nil
 }
 
 // ShowLTMDeviceName returns information
 // of a specific loadbalancer device
-func ShowLTMDeviceName(host, inputURL string, ltmDeviceNames map[string]string) *Device {
+func ShowLTMDeviceName(host, inputURL string, ltmDeviceNames map[string]string) (*Device, error) {
 	// Declaration LTM Device Name
 	value := ltmDeviceNames[host]
 	ltmdevicename := new(Device)
@@ -79,19 +82,25 @@ func ShowLTMDeviceName(host, inputURL string, ltmDeviceNames map[string]string) 
 	u.Scheme = common.Protocol
 	u.Path = path.Join(host, common.DeviceURI, value)
 	devicenameURL := u.String()
-	backend.Request(common.GET, devicenameURL, &ltmdevicename)
-	return ltmdevicename
+	_, err := backend.Request(common.GET, devicenameURL, &ltmdevicename)
+	if err != nil {
+		return nil, err
+	}
+	return ltmdevicename, nil
 }
 
 //Loadbalancer checks which loadbalancer device is active
 //TODO no error handling, function interacting with backend, possible bugs here
-func Loadbalancer(lbpair string, ltmDeviceNames map[string]string) string {
+func Loadbalancer(lbpair string, ltmDeviceNames map[string]string) (string, error) {
 	lb01 := lbpair + "01"
 	lb02 := lbpair + "02"
 	u := new(url.URL)
 	u.Scheme = common.Protocol
 	u.Path = path.Join(lb02, common.DeviceURI)
-	obj := ShowLTMDeviceName(lb02, u.Path, ltmDeviceNames)
+	obj, err := ShowLTMDeviceName(lb01, u.Path, ltmDeviceNames)
+	if err != nil {
+		return "", err
+	}
 	f5url := new(url.URL)
 	var p string
 	if obj.FailoverState != "active" {
@@ -101,5 +110,5 @@ func Loadbalancer(lbpair string, ltmDeviceNames map[string]string) string {
 	}
 	f5url.Scheme = common.Protocol
 	f5url.Path = p
-	return f5url.String()
+	return f5url.String(), nil
 }

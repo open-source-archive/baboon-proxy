@@ -32,7 +32,10 @@ type CreateSSLProfile struct {
 
 // PostLTMSSLKey create a new ssl key
 func PostLTMSSLKey(host string, json interface{}) (*backend.Response, error) {
-	u, _ := url.Parse(host)
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = path.Join(u.Path, "key")
 	r, err := backend.Request(common.POST, u.String(), &json)
 	if err != nil {
@@ -43,7 +46,10 @@ func PostLTMSSLKey(host string, json interface{}) (*backend.Response, error) {
 
 // PostLTMSSLCert create a new ssl certificate
 func PostLTMSSLCert(host string, json interface{}) (*backend.Response, error) {
-	u, _ := url.Parse(host)
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = path.Join(u.Path, "cert")
 	r, err := backend.Request(common.POST, u.String(), &json)
 	if err != nil {

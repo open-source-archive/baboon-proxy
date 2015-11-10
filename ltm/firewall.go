@@ -38,21 +38,33 @@ type AddressList struct {
 }
 
 // ShowLTMAddressList returns a specific address list on LB
-func ShowLTMAddressList(host, address string) *AddressList {
+func ShowLTMAddressList(host, address string) (*AddressList, error) {
 	addresslist := new(AddressList)
-	u, _ := url.Parse(host)
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = path.Join(u.Path, common.AddressList, address)
-	backend.Request(common.GET, u.String(), addresslist)
-	return addresslist
+	_, err = backend.Request(common.GET, u.String(), addresslist)
+	if err != nil {
+		return nil, err
+	}
+	return addresslist, nil
 }
 
 // ShowLTMAddressList returns a specific address list on LB
-func ShowLTMAddressListName(host, address string) *AddressList {
+func ShowLTMAddressListName(host, address string) (*AddressList, error) {
 	addresslist := new(AddressList)
-	u, _ := url.Parse(host)
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = path.Join(u.Path, common.AddressList, address)
-	backend.Request(common.GET, u.String(), addresslist)
-	return addresslist
+	_, err = backend.Request(common.GET, u.String(), addresslist)
+	if err != nil {
+		return nil, err
+	}
+	return addresslist, nil
 }
 
 // PatchLTMBlockAddresses to block IPs
@@ -60,8 +72,14 @@ func ShowLTMAddressListName(host, address string) *AddressList {
 // its necessary to get all entries first
 func PatchLTMBlockAddresses(host string, blockIP *CreateAddresses) (*backend.Response, error) {
 
-	whiteIP := ShowLTMAddressListName(host, common.WhiteList)
-	blackIP := ShowLTMAddressListName(host, common.BlackList)
+	whiteIP, err := ShowLTMAddressListName(host, common.WhiteList)
+	if err != nil {
+		return nil, err
+	}
+	blackIP, err := ShowLTMAddressListName(host, common.BlackList)
+	if err != nil {
+		return nil, err
+	}
 	var whitelistedIP CreateAddresses
 
 	// IPs which you want to block should be first checked
@@ -79,7 +97,7 @@ func PatchLTMBlockAddresses(host string, blockIP *CreateAddresses) (*backend.Res
 	// append(...) is doing a delete item of the slice
 	// see https://github.com/golang/go/wiki/SliceTricks
 
-	glog.Infof("Wohoo %+v", blockIP.Addresses)
+	glog.Infof("IPs to block: %+v", blockIP.Addresses)
 	if len(blockIP.Addresses) < len(whitelistedIP.Addresses) {
 		for i, b := range blockIP.Addresses {
 			for _, w := range whitelistedIP.Addresses {
@@ -100,7 +118,7 @@ func PatchLTMBlockAddresses(host string, blockIP *CreateAddresses) (*backend.Res
 		}
 	}
 
-	glog.Infof("Wohoo %+v", blockIP.Addresses)
+	glog.Infof("Blocked IPs %+v", blockIP.Addresses)
 
 	// add already blacklisted IPs to our new black IPs
 
@@ -108,7 +126,7 @@ func PatchLTMBlockAddresses(host string, blockIP *CreateAddresses) (*backend.Res
 		blockIP.Addresses = append(blockIP.Addresses, blackIP.Addresses[i])
 	}
 
-	u, _ := url.Parse(host)
+	u, err := url.Parse(host)
 	u.Path = path.Join(u.Path, common.AddressList, common.BlackList)
 
 	r, err := backend.Request(common.PATCH, u.String(), &blockIP)
@@ -120,10 +138,16 @@ func PatchLTMBlockAddresses(host string, blockIP *CreateAddresses) (*backend.Res
 
 // DeleteLTMBlockAddresses remove IPs from blacklist
 func DeleteLTMBlockAddresses(host string, deleteIP *DeleteAddresses) (*backend.Response, error) {
-	u, _ := url.Parse(host)
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = path.Join(u.Path, common.AddressList, common.BlackList)
 
-	blackIP := ShowLTMAddressListName(host, common.BlackList)
+	blackIP, err := ShowLTMAddressListName(host, common.BlackList)
+	if err != nil {
+		return nil, err
+	}
 
 	if len(blackIP.Addresses) < len(deleteIP.Addresses) {
 		for i := range blackIP.Addresses {
@@ -158,7 +182,10 @@ func DeleteLTMBlockAddresses(host string, deleteIP *DeleteAddresses) (*backend.R
 // its necessary to get all entries first
 func PatchLTMWhiteAddresses(host string, whiteIP *CreateAddresses) (*backend.Response, error) {
 
-	white := ShowLTMAddressListName(host, common.WhiteList)
+	white, err := ShowLTMAddressListName(host, common.WhiteList)
+	if err != nil {
+		return nil, err
+	}
 
 	// first slices are compared to order loops
 	// if white list has already white ips it will skip
@@ -189,7 +216,10 @@ func PatchLTMWhiteAddresses(host string, whiteIP *CreateAddresses) (*backend.Res
 		whiteIP.Addresses = append(whiteIP.Addresses, white.Addresses[i])
 	}
 
-	u, _ := url.Parse(host)
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = path.Join(u.Path, common.AddressList, common.WhiteList)
 
 	r, err := backend.Request(common.PATCH, u.String(), &whiteIP)

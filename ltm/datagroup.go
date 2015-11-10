@@ -59,28 +59,43 @@ type RemoveDataGroup struct {
 }
 
 // ShowLTMDataGroup lists all datagroups on a loadbalancer
-func ShowLTMDataGroup(host, source string) *DataGroups {
+func ShowLTMDataGroup(host, source string) (*DataGroups, error) {
 	// Declaration LTM DataGroup
 	ltmdatagroup := new(DataGroups)
-	u, _ := url.Parse(host)
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = path.Join(u.Path, common.Dg, source)
-	backend.Request(common.GET, u.String(), ltmdatagroup)
-	return ltmdatagroup
+	_, err = backend.Request(common.GET, u.String(), ltmdatagroup)
+	if err != nil {
+		return nil, err
+	}
+	return ltmdatagroup, nil
 }
 
 // ShowLTMDataGroupName lists a specific datagroup on a loadbalancer
-func ShowLTMDataGroupName(host, direction, datagroupname string) *DataGroup {
+func ShowLTMDataGroupName(host, direction, datagroupname string) (*DataGroup, error) {
 	// Declaration LTM DataGroup by Name
 	ltmdatagroupname := new(DataGroup)
-	u, _ := url.Parse(host)
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = path.Join(u.Path, common.Dg, direction, "/", datagroupname)
-	backend.Request(common.GET, u.String(), ltmdatagroupname)
-	return ltmdatagroupname
+	_, err = backend.Request(common.GET, u.String(), ltmdatagroupname)
+	if err != nil {
+		return nil, err
+	}
+	return ltmdatagroupname, nil
 }
 
 // PostLTMDataGroup creates a new datagroup
 func PostLTMDataGroup(host, direction string, json *CreateDataGroup) (*backend.Response, error) {
-	u, _ := url.Parse(host)
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = path.Join(u.Path, common.Dg, direction)
 	r, err := backend.Request(common.POST, u.String(), &json)
 	if err != nil {
@@ -91,7 +106,10 @@ func PostLTMDataGroup(host, direction string, json *CreateDataGroup) (*backend.R
 
 // PutLTMDataGroupItem deletes all records in a datagroup and add new records
 func PutLTMDataGroupItem(host, direction, datagroup string, json *CreateDataGroupItem) (*backend.Response, error) {
-	u, _ := url.Parse(host)
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = path.Join(u.Path, common.Dg, direction, "/", datagroup)
 
 	r, err := backend.Request(common.PATCH, u.String(), &json)
@@ -105,10 +123,16 @@ func PutLTMDataGroupItem(host, direction, datagroup string, json *CreateDataGrou
 // F5 API use PATCH and PUT in the same way. Overwriting all records, which is bad if you want to add items
 // in existing list. It gets all records first an append the new records from client.
 func PatchLTMDataGroupItem(host, direction, datagroup string, json *CreateDataGroupItem) (*backend.Response, error) {
-	u, _ := url.Parse(host)
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = path.Join(u.Path, common.Dg, direction, "/", datagroup)
 
-	data := ShowLTMDataGroupName(host, direction, datagroup)
+	data, err := ShowLTMDataGroupName(host, direction, datagroup)
+	if err != nil {
+		return nil, err
+	}
 	for _, v := range data.Records {
 		json.Records = append(json.Records, v)
 	}
@@ -121,7 +145,10 @@ func PatchLTMDataGroupItem(host, direction, datagroup string, json *CreateDataGr
 
 // DeleteLTMDataGroup deletes a specific datagroup
 func DeleteLTMDataGroup(host, direction, datagroupname string) (*backend.Response, error) {
-	u, _ := url.Parse(host)
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
 	u.Path = path.Join(u.Path, common.Dg, direction, "/", datagroupname)
 	r, err := backend.Request(common.DELETE, u.String(), nil)
 	if err != nil {

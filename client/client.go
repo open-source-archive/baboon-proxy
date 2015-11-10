@@ -78,8 +78,14 @@ func GTMWipNameList(c *gin.Context) {
 func LTMPoolList(c *gin.Context) {
 	lbpair := c.Params.ByName("lbpair")
 	glog.Infof("%v", common.Conf.Ltmdevicenames)
-	f5url := ltm.Loadbalancer(lbpair, common.Conf.Ltmdevicenames)
-	poollist := ltm.ShowLTMPools(f5url)
+	f5url, err := ltm.Loadbalancer(lbpair, common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	poollist, err := ltm.ShowLTMPools(f5url)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	for i, v := range poollist.Items {
 		u := new(url.URL)
 		u.Scheme = common.Protocol
@@ -109,9 +115,15 @@ func GTMPoolList(c *gin.Context) {
 
 // LTMPoolNameList show specific local traffic manager pool
 func LTMPoolNameList(c *gin.Context) {
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	poolname := c.Params.ByName("poolname")
-	poolnamelist := ltm.ShowLTMPool(f5url, poolname)
+	poolnamelist, err := ltm.ShowLTMPool(f5url, poolname)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	u := new(url.URL)
 	u.Scheme = common.Protocol
 	u.Path = path.Join(c.Request.Host, c.Request.RequestURI, common.MembersURI)
@@ -150,31 +162,52 @@ func GTMPoolMemberList(c *gin.Context) {
 
 // LTMPoolMemberList show local traffic manager members in a specific pool
 func LTMPoolMemberList(c *gin.Context) {
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	poolname := c.Params.ByName("poolname")
-	poolmemberlist := ltm.ShowLTMPoolMember(f5url, poolname)
+	poolmemberlist, err := ltm.ShowLTMPoolMember(f5url, poolname)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.JSON(http.StatusOK, gin.H{"message": poolmemberlist})
 }
 
 // LTMDeviceList show local traffic manager devices
 func LTMDeviceList(c *gin.Context) {
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
-	devicelist := ltm.ShowLTMDevice(f5url)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	devicelist, err := ltm.ShowLTMDevice(f5url)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.JSON(http.StatusOK, gin.H{"message": devicelist})
 }
 
 // LTMDeviceNameList show local traffic manager specific device
 func LTMDeviceNameList(c *gin.Context) {
 	device := c.Params.ByName("devicename")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
-	devicenamelist := ltm.ShowLTMDeviceName(device, f5url, common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	devicenamelist, err := ltm.ShowLTMDeviceName(device, f5url, common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.JSON(http.StatusOK, gin.H{"message": devicenamelist})
 }
 
 // LTMVirtualServerList show local traffic manager virtual servers
 func LTMVirtualServerList(c *gin.Context) {
 	lbpair := c.Params.ByName("lbpair")
-	f5url := ltm.Loadbalancer(lbpair, common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(lbpair, common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	virtualserverlist, err := ltm.ShowLTMVirtualServer(f5url)
 	if err != nil {
 		glog.Errorf("%s", err)
@@ -202,7 +235,10 @@ func LTMVirtualServerList(c *gin.Context) {
 func LTMVirtualServerNameList(c *gin.Context) {
 	lbpair := c.Params.ByName("lbpair")
 	vservername := c.Params.ByName("virtual")
-	f5url := ltm.Loadbalancer(lbpair, common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(lbpair, common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	virtualservernamelist, err := ltm.ShowLTMVirtualServerName(f5url, vservername)
 	if err != nil {
 		glog.Errorf("%s", err)
@@ -227,15 +263,24 @@ func LTMVirtualServerNameList(c *gin.Context) {
 // LTMProfileList show local traffic manager profiles of a specific virtual server
 func LTMProfileList(c *gin.Context) {
 	vservername := c.Params.ByName("virtual")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
-	profilelist := ltm.ShowLTMProfile(f5url, vservername)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	profilelist, err := ltm.ShowLTMProfile(f5url, vservername)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.JSON(http.StatusOK, gin.H{"message": profilelist})
 }
 
 // LTMFWRuleList show local traffic manager iRules of a specific virtual server
 func LTMFWRuleList(c *gin.Context) {
 	vservername := c.Params.ByName("virtual")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	rulelist := ltm.ShowLTMFWRules(f5url, vservername)
 	c.JSON(http.StatusOK, gin.H{"message": rulelist})
 }
@@ -243,8 +288,14 @@ func LTMFWRuleList(c *gin.Context) {
 // LTMDataGroupList show local traffic manager internal data groups
 func LTMDataGroupList(c *gin.Context) {
 	direction := common.InternalDataGroup
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
-	datagrouplist := ltm.ShowLTMDataGroup(f5url, direction)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	datagrouplist, err := ltm.ShowLTMDataGroup(f5url, direction)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.JSON(http.StatusOK, gin.H{"message": datagrouplist})
 }
 
@@ -252,15 +303,24 @@ func LTMDataGroupList(c *gin.Context) {
 func LTMDataGroupNameList(c *gin.Context) {
 	direction := common.InternalDataGroup
 	datagroupname := c.Params.ByName("datagroupname")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
-	datagroupnamelist := ltm.ShowLTMDataGroupName(f5url, direction, datagroupname)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	datagroupnamelist, err := ltm.ShowLTMDataGroupName(f5url, direction, datagroupname)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.JSON(http.StatusOK, gin.H{"message": datagroupnamelist})
 }
 
 // LTMVirtualServerPost create virtual server
 func LTMVirtualServerPost(c *gin.Context) {
 	var vservercreate ltm.CreateVirtualServer
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 
 	c.Bind(&vservercreate)
 	res, err := ltm.PostLTMVirtualServer(f5url, &vservercreate)
@@ -305,7 +365,10 @@ func LTMSSLKeyPost(c *gin.Context) {
 func LTMPoolPost(c *gin.Context) {
 	var poolcreate ltm.CreatePool
 
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.Bind(&poolcreate)
 	res, _ := ltm.PostLTMPool(f5url, &poolcreate)
 	json.Unmarshal([]byte(res.Body), &returnerror)
@@ -351,7 +414,10 @@ func LTMPoolMemberPost(c *gin.Context) {
 	var poolmembercreate ltm.CreatePoolMember
 
 	poolname := c.Params.ByName("poolname")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 
 	c.Bind(&poolmembercreate)
 	res, _ := ltm.PostLTMPoolMember(f5url, poolname, &poolmembercreate)
@@ -368,7 +434,10 @@ func LTMPoolMemberPost(c *gin.Context) {
 func LTMPoolPut(c *gin.Context) {
 	var poolmodify ltm.ModifyPool
 
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 
 	c.Bind(&poolmodify)
 	res, _ := ltm.PutLTMPool(f5url, poolmodify.Name, &poolmodify)
@@ -384,7 +453,10 @@ func LTMPoolPut(c *gin.Context) {
 // LTMPoolDelete delete a pool on a local traffic manager
 func LTMPoolDelete(c *gin.Context) {
 	var pooldelete ltm.RemovePool
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.Bind(&pooldelete)
 	res, _ := ltm.DeleteLTMPool(f5url, pooldelete.Name)
 	json.Unmarshal([]byte(res.Body), &returnerror)
@@ -413,7 +485,10 @@ func GTMPoolDelete(c *gin.Context) {
 func LTMPoolMemberPut(c *gin.Context) {
 	var poolmembermodify ltm.ModifyPoolMember
 	poolname := c.Params.ByName("poolname")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.Bind(&poolmembermodify)
 	res, _ := ltm.PutLTMPoolMember(f5url, poolname, poolmembermodify.Name, poolmembermodify.Status)
 	json.Unmarshal([]byte(res.Body), &returnerror)
@@ -428,7 +503,10 @@ func LTMPoolMemberPut(c *gin.Context) {
 func LTMPoolMemberDelete(c *gin.Context) {
 	var poolmemberdelete ltm.RemovePoolMember
 	poolname := c.Params.ByName("poolname")
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.Bind(&poolmemberdelete)
 	res, _ := ltm.DeleteLTMPoolMember(f5url, poolname, poolmemberdelete.Name)
 	json.Unmarshal([]byte(res.Body), &returnerror)
@@ -443,7 +521,10 @@ func LTMPoolMemberDelete(c *gin.Context) {
 func LTMDataGroupPost(c *gin.Context) {
 	var datagroupcreate ltm.CreateDataGroup
 	direction := common.InternalDataGroup
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.Bind(&datagroupcreate)
 	res, _ := ltm.PostLTMDataGroup(f5url, direction, &datagroupcreate)
 	json.Unmarshal([]byte(res.Body), &returnerror)
@@ -458,7 +539,10 @@ func LTMDataGroupPost(c *gin.Context) {
 func LTMDataGroupDelete(c *gin.Context) {
 	var datagroupdelete ltm.RemoveDataGroup
 	direction := common.InternalDataGroup
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.Bind(&datagroupdelete)
 	res, _ := ltm.DeleteLTMDataGroup(f5url, direction, datagroupdelete.Name)
 	json.Unmarshal([]byte(res.Body), &returnerror)
@@ -476,7 +560,10 @@ func LTMDataGroupItemPut(c *gin.Context) {
 	direction := common.InternalDataGroup
 	datagroupname := c.Params.ByName("datagroupname")
 
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 
 	c.Bind(&datagroupitemcreate)
 	res, _ := ltm.PatchLTMDataGroupItem(f5url, direction, datagroupname, &datagroupitemcreate)
@@ -494,7 +581,10 @@ func LTMDataGroupItemPatch(c *gin.Context) {
 	direction := common.InternalDataGroup
 	datagroupname := c.Params.ByName("datagroupname")
 
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 
 	c.Bind(&datagroupitemcreate)
 	res, _ := ltm.PatchLTMDataGroupItem(f5url, direction, datagroupname, &datagroupitemcreate)
@@ -509,9 +599,15 @@ func LTMDataGroupItemPatch(c *gin.Context) {
 // LTMAddressList show local traffic blocked ip addresses
 func LTMAddressList(c *gin.Context) {
 	lbpair := c.Params.ByName("lbpair")
-	f5url := ltm.Loadbalancer(lbpair, common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(lbpair, common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	f5url = strings.Replace(f5url, common.LtmURI, "", -1)
-	addresslist := ltm.ShowLTMAddressList(f5url, common.BlackList)
+	addresslist, err := ltm.ShowLTMAddressList(f5url, common.BlackList)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.JSON(http.StatusOK, gin.H{"message": addresslist})
 }
 
@@ -519,7 +615,10 @@ func LTMAddressList(c *gin.Context) {
 func LTMBlockIPPatch(c *gin.Context) {
 	var blockips ltm.CreateAddresses
 
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	f5url = strings.Replace(f5url, common.LtmURI, "", -1)
 	c.Bind(&blockips)
 	res, err := ltm.PatchLTMBlockAddresses(f5url, &blockips)
@@ -539,7 +638,10 @@ func LTMBlockIPPatch(c *gin.Context) {
 func LTMWhiteIPPatch(c *gin.Context) {
 	var whiteips ltm.CreateAddresses
 
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	f5url = strings.Replace(f5url, common.LtmURI, "", -1)
 	c.Bind(&whiteips)
 	res, err := ltm.PatchLTMWhiteAddresses(f5url, &whiteips)
@@ -558,7 +660,10 @@ func LTMWhiteIPPatch(c *gin.Context) {
 func LTMRemoveBlockIPPatch(c *gin.Context) {
 	var unblockips ltm.DeleteAddresses
 
-	f5url := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	f5url = strings.Replace(f5url, common.LtmURI, "", -1)
 	c.Bind(&unblockips)
 	res, err := ltm.DeleteLTMBlockAddresses(f5url, &unblockips)
