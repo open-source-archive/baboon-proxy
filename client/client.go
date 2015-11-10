@@ -40,7 +40,10 @@ func GTMWipList(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
 	} else {
-		gtmwiplist := gtm.ShowGTMWips(f5url)
+		gtmwiplist, err := gtm.ShowGTMWips(f5url)
+		if err != nil {
+			glog.Errorf("%s", err)
+		}
 		poolsURI := util.ReplaceGTMWipUritoGTMPoolURI(c.Request.RequestURI)
 		for _, wip := range gtmwiplist.Items {
 			for i, pools := range wip.Pools {
@@ -62,7 +65,10 @@ func GTMWipNameList(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
 	} else {
-		gtmwipnamelist := gtm.ShowGTMWip(f5url, wideip)
+		gtmwipnamelist, err := gtm.ShowGTMWip(f5url, wideip)
+		if err != nil {
+			glog.Errorf("%s", err)
+		}
 		poolsURI := util.ReplaceGTMWipUritoGTMPoolURI(c.Request.RequestURI)
 		for i, pool := range gtmwipnamelist.Pools {
 			u := new(url.URL)
@@ -102,7 +108,10 @@ func GTMPoolList(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
 	} else {
-		gtmpoollist := gtm.ShowGTMPools(f5url)
+		gtmpoollist, err := gtm.ShowGTMPools(f5url)
+		if err != nil {
+			glog.Errorf("%s", err)
+		}
 		for i, v := range gtmpoollist.Items {
 			u := new(url.URL)
 			u.Scheme = common.Protocol
@@ -139,7 +148,10 @@ func GTMPoolNameList(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
 	} else {
-		gtmpoolnamelist := gtm.ShowGTMPool(f5url, pool)
+		gtmpoolnamelist, err := gtm.ShowGTMPool(f5url, pool)
+		if err != nil {
+			glog.Errorf("%s", err)
+		}
 		u := new(url.URL)
 		u.Scheme = common.Protocol
 		u.Path = path.Join(c.Request.Host, c.Request.RequestURI, common.MembersURI)
@@ -156,7 +168,10 @@ func GTMPoolMemberList(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
 	}
-	poolmemberlist := gtm.ShowGTMPoolMembers(f5url, pool)
+	poolmemberlist, err := gtm.ShowGTMPoolMembers(f5url, pool)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.JSON(http.StatusOK, gin.H{"message": poolmemberlist})
 }
 
