@@ -15,11 +15,11 @@ type Response struct {
 
 func init() {
 	InitCredentials()
+	InitSession()
 }
 
 //Request represent a request to LB
 func Request(method int, u string, body interface{}) (*Response, error) {
-	InitSession()
 	var (
 		err error
 		r   *napping.Response
