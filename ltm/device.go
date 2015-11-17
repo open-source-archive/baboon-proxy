@@ -104,9 +104,9 @@ func Loadbalancer(lbpair string, ltmDeviceNames map[string]string) (string, erro
 	f5url := new(url.URL)
 	var p string
 	if obj.FailoverState != "active" {
-		p = path.Join(lb01, common.LtmURI)
-	} else {
 		p = path.Join(lb02, common.LtmURI)
+	} else {
+		p = path.Join(lb01, common.LtmURI)
 	}
 	f5url.Scheme = common.Protocol
 	f5url.Path = p

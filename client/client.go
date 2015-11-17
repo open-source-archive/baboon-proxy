@@ -24,7 +24,10 @@ func GTMWipDelete(c *gin.Context) {
 
 	f5url, _ := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
 	c.Bind(&wipdelete)
-	res, _ := gtm.DeleteGTMWip(f5url, wipdelete.Name)
+	res, err := gtm.DeleteGTMWip(f5url, wipdelete.Name)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
 	if res.Status == 200 {
 		res.Status = 201
@@ -39,22 +42,21 @@ func GTMWipList(c *gin.Context) {
 	f5url, err := gtm.Trafficmanager(tm)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
-	} else {
-		gtmwiplist, err := gtm.ShowGTMWips(f5url)
-		if err != nil {
-			glog.Errorf("%s", err)
-		}
-		poolsURI := util.ReplaceGTMWipUritoGTMPoolURI(c.Request.RequestURI)
-		for _, wip := range gtmwiplist.Items {
-			for i, pools := range wip.Pools {
-				u := new(url.URL)
-				u.Scheme = common.Protocol
-				u.Path = path.Join(c.Request.Host, poolsURI, pools.Name)
-				wip.Pools[i].PoolsReference = u.String()
-			}
-		}
-		c.JSON(http.StatusOK, gin.H{"message": gtmwiplist})
 	}
+	gtmwiplist, err := gtm.ShowGTMWips(f5url)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	poolsURI := util.ReplaceGTMWipUritoGTMPoolURI(c.Request.RequestURI)
+	for _, wip := range gtmwiplist.Items {
+		for i, pools := range wip.Pools {
+			u := new(url.URL)
+			u.Scheme = common.Protocol
+			u.Path = path.Join(c.Request.Host, poolsURI, pools.Name)
+			wip.Pools[i].PoolsReference = u.String()
+		}
+	}
+	c.JSON(http.StatusOK, gin.H{"message": gtmwiplist})
 }
 
 // GTMWipNameList show a specific wide ip
@@ -64,20 +66,19 @@ func GTMWipNameList(c *gin.Context) {
 	f5url, err := gtm.Trafficmanager(tm)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
-	} else {
-		gtmwipnamelist, err := gtm.ShowGTMWip(f5url, wideip)
-		if err != nil {
-			glog.Errorf("%s", err)
-		}
-		poolsURI := util.ReplaceGTMWipUritoGTMPoolURI(c.Request.RequestURI)
-		for i, pool := range gtmwipnamelist.Pools {
-			u := new(url.URL)
-			u.Scheme = common.Protocol
-			u.Path = path.Join(c.Request.Host, poolsURI, pool.Name)
-			gtmwipnamelist.Pools[i].PoolsReference = u.String()
-		}
-		c.JSON(http.StatusOK, gin.H{"message": gtmwipnamelist})
 	}
+	gtmwipnamelist, err := gtm.ShowGTMWip(f5url, wideip)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	poolsURI := util.ReplaceGTMWipUritoGTMPoolURI(c.Request.RequestURI)
+	for i, pool := range gtmwipnamelist.Pools {
+		u := new(url.URL)
+		u.Scheme = common.Protocol
+		u.Path = path.Join(c.Request.Host, poolsURI, pool.Name)
+		gtmwipnamelist.Pools[i].PoolsReference = u.String()
+	}
+	c.JSON(http.StatusOK, gin.H{"message": gtmwipnamelist})
 }
 
 // LTMPoolList show local traffic manager pools
@@ -107,19 +108,18 @@ func GTMPoolList(c *gin.Context) {
 	f5url, err := gtm.Trafficmanager(tm)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
-	} else {
-		gtmpoollist, err := gtm.ShowGTMPools(f5url)
-		if err != nil {
-			glog.Errorf("%s", err)
-		}
-		for i, v := range gtmpoollist.Items {
-			u := new(url.URL)
-			u.Scheme = common.Protocol
-			u.Path = path.Join(c.Request.Host, c.Request.RequestURI, "/", v.Name, common.MembersURI)
-			gtmpoollist.Items[i].MembersReference = u.String()
-		}
-		c.JSON(http.StatusOK, gin.H{"message": gtmpoollist})
 	}
+	gtmpoollist, err := gtm.ShowGTMPools(f5url)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	for i, v := range gtmpoollist.Items {
+		u := new(url.URL)
+		u.Scheme = common.Protocol
+		u.Path = path.Join(c.Request.Host, c.Request.RequestURI, "/", v.Name, common.MembersURI)
+		gtmpoollist.Items[i].MembersReference = u.String()
+	}
+	c.JSON(http.StatusOK, gin.H{"message": gtmpoollist})
 }
 
 // LTMPoolNameList show specific local traffic manager pool
@@ -147,17 +147,16 @@ func GTMPoolNameList(c *gin.Context) {
 	f5url, err := gtm.Trafficmanager(tm)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
-	} else {
-		gtmpoolnamelist, err := gtm.ShowGTMPool(f5url, pool)
-		if err != nil {
-			glog.Errorf("%s", err)
-		}
-		u := new(url.URL)
-		u.Scheme = common.Protocol
-		u.Path = path.Join(c.Request.Host, c.Request.RequestURI, common.MembersURI)
-		gtmpoolnamelist.MembersReference = u.String()
-		c.JSON(http.StatusOK, gin.H{"message": gtmpoolnamelist})
 	}
+	gtmpoolnamelist, err := gtm.ShowGTMPool(f5url, pool)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	u := new(url.URL)
+	u.Scheme = common.Protocol
+	u.Path = path.Join(c.Request.Host, c.Request.RequestURI, common.MembersURI)
+	gtmpoolnamelist.MembersReference = u.String()
+	c.JSON(http.StatusOK, gin.H{"message": gtmpoolnamelist})
 }
 
 // GTMPoolMemberList show global traffic manager members in a specific pool
