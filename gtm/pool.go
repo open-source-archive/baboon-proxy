@@ -55,7 +55,7 @@ type Pool struct {
 	Qosvsscore                int    `json:"qosVsScore"`
 	TTL                       int    `json:"ttl"`
 	Verifymemberavailability  string `json:"verifyMemberAvailability"`
-	MembersReference          string `json:"membersReference"`
+	MembersReference          string `json:"memReference"`
 }
 
 // CreatePool struct to create a pool

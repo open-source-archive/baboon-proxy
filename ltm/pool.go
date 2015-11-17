@@ -52,7 +52,7 @@ type Pool struct {
 	QueueTimeLimit         int    `json:"queueTimeLimit"`
 	ReselectTries          int    `json:"reselectTries"`
 	SlowRampTime           int    `json:"slowRampTime"`
-	MembersReference       string `json:"membersReference"`
+	MembersReference       string `json:"memReference"`
 }
 
 // PoolMembers struct provides information
