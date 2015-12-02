@@ -408,6 +408,21 @@ func GTMPoolPost(c *gin.Context) {
 		returnerror.ErrorMessage(), common.Conf.Documentation["gtmpooldocumentationuri"], c)
 }
 
+// GTMPoolMemberPost adds additional LTM virtual server on a global traffic manager pool
+func GTMPoolMemberPost(c *gin.Context) {
+	var poolmember gtm.CreatePoolMember
+	pool := c.Params.ByName("pool")
+	f5url, _ := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
+	c.Bind(&poolmember)
+	res, _ := gtm.PostGTMPoolMember(f5url, pool, &poolmember)
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	if res.Status == 200 {
+		res.Status = 201
+	}
+	respondWithStatus(res.Status, "Poolmember added", poolmember.Name,
+		returnerror.ErrorMessage(), common.Conf.Documentation["gtmpooldocumentationuri"], c)
+}
+
 // GTMWideipPost create new wide IP on a global traffic manager
 func GTMWideipPost(c *gin.Context) {
 	var wideipcreate gtm.CreateWip
@@ -440,7 +455,7 @@ func LTMPoolMemberPost(c *gin.Context) {
 	if res.Status == 200 {
 		res.Status = 201
 	}
-	respondWithStatus(res.Status, "Pool member added", poolmembercreate.Name,
+	respondWithStatus(res.Status, "Poolmember added", poolmembercreate.Name,
 		returnerror.ErrorMessage(), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 }
 

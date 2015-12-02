@@ -60,15 +60,16 @@ type Pool struct {
 
 // CreatePool struct to create a pool
 type CreatePool struct {
-	Name    string `json:"name" binding:"required"`
-	Members []struct {
-		Name         string `json:"name" binding:"required"`
-		Loadbalancer string `json:"loadbalancer,omitempty"`
-		Partition    string `json:"partition,omitempty"`
-		Subpath      string `json:"subPath,omitempty"`
-		Fullpath     string `json:"fullPath,omitempty"`
-	} `json:"members" binding:"required"`
-	Monitor string `json:"monitor",binding:"required"`
+	Name    string             `json:"name" binding:"required"`
+	Members []CreatePoolMember `json:"members" binding:"required"`
+	Monitor string             `json:"monitor",binding:"required"`
+}
+type CreatePoolMember struct {
+	Name         string `json:"name" binding:"required"`
+	Loadbalancer string `json:"loadbalancer,omitempty"`
+	Partition    string `json:"partition,omitempty"`
+	Subpath      string `json:"subPath,omitempty"`
+	Fullpath     string `json:"fullPath,omitempty"`
 }
 
 // RemovePool struct to delete a pool
@@ -174,6 +175,27 @@ func PostGTMPool(host string, json *CreatePool) (*backend.Response, error) {
 		json.Members[i].Fullpath = fmt.Sprintf("/%s/%s:/%s/%s", gtmPartition, json.Members[i].Loadbalancer, ltmPartition, json.Members[i].Name)
 		json.Members[i].Loadbalancer = ""
 	}
+	r, err := backend.Request(common.POST, u.String(), &json)
+	fmt.Println(json)
+	if err != nil {
+		return nil, err
+	}
+	return r, nil
+}
+
+//PostGTMPoolMember adds new members to an existing pool on a trafficmanager
+func PostGTMPoolMember(host string, pool string, json *CreatePoolMember) (*backend.Response, error) {
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
+	u.Scheme = common.Protocol
+	u.Path = path.Join(u.Path, common.Gtmpoolsuri, pool, common.MembersURI)
+
+	json.Partition = gtmPartition
+	json.Subpath = fmt.Sprintf("%s:/%s", json.Loadbalancer, gtmPartition)
+	json.Fullpath = fmt.Sprintf("/%s/%s:/%s/%s", gtmPartition, json.Loadbalancer, ltmPartition, json.Name)
+	json.Loadbalancer = ""
 	r, err := backend.Request(common.POST, u.String(), &json)
 	fmt.Println(json)
 	if err != nil {
