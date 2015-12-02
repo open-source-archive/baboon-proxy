@@ -64,6 +64,7 @@ func main() {
 		privateGTM.Use(ginoauth2.Auth(ginoauth2.UidCheck, *OAuth2Endpoint, rootusers))
 		{
 			privateGTM.POST("/pools", client.GTMPoolPost)
+			privateGTM.POST("/pools/:pool/members", client.GTMPoolMemberPost)
 			privateGTM.POST("/wideips", client.GTMWideipPost)
 			privateGTM.DELETE("/pools", client.GTMPoolDelete)
 			privateGTM.DELETE("/wideips", client.GTMWipDelete)
