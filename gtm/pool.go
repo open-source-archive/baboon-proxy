@@ -77,6 +77,26 @@ type RemovePool struct {
 	Name string `json:"name" binding:"required"`
 }
 
+// RemovePoolMember struct to delete a member in a pool
+type RemovePoolMember struct {
+	Name         string `json:"name" binding:"required"`
+	Loadbalancer string `json:"loadbalancer" binding:"required"`
+}
+
+type ModifyPoolMemberStatus struct {
+	Name         string `json:"name" binding:"required"`
+	Loadbalancer string `json:"loadbalancer" binding:"required"`
+	Status       bool   `json:"status" binding:"required"`
+}
+
+type EnablePoolMemberStatus struct {
+	Enabled bool `json:"enabled" binding:"required"`
+}
+
+type DisablePoolMemberStatus struct {
+	Disabled bool `json:"disabled" binding:"required"`
+}
+
 // PoolMembers struct provides information about multiple members in one pool
 type PoolMembers struct {
 	Kind  string `json:"kind"`
@@ -214,6 +234,53 @@ func DeleteGTMPool(host, pool string) (*backend.Response, error) {
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri)
 	u.Path = path.Join(u.Path, fmt.Sprintf("/~%s~", gtmPartition, pool))
 	r, err := backend.Request(common.DELETE, u.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	return r, nil
+
+}
+
+// DeleteGTMPoolMember delete pool member on a trafficmanager
+func DeleteGTMPoolMember(host, pool string, poolmember *RemovePoolMember) (*backend.Response, error) {
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
+	u.Scheme = common.Protocol
+	u.Path = path.Join(u.Path, common.Gtmpoolsuri)
+	u.Path = path.Join(u.Path, fmt.Sprintf("/%s/members/~%s~%s:~%s~%s", pool, gtmPartition,
+		poolmember.Loadbalancer, ltmPartition, poolmember.Name))
+	r, err := backend.Request(common.DELETE, u.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	return r, nil
+}
+
+// PutGTMPoolMemberStatus modify status of wideip pool member
+func PutGTMPoolMemberStatus(host, pool string, poolmember *ModifyPoolMemberStatus) (*backend.Response, error) {
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
+	u.Scheme = common.Protocol
+	u.Path = path.Join(u.Path, common.Gtmpoolsuri)
+	u.Path = path.Join(u.Path, fmt.Sprintf("/%s/members/~%s~%s:~%s~%s", pool, gtmPartition,
+		poolmember.Loadbalancer, ltmPartition, poolmember.Name))
+	var memberstatus interface{}
+	switch poolmember.Status {
+	case true:
+		{
+			memberstatus = EnablePoolMemberStatus{Enabled: true}
+		}
+	case false:
+		{
+			memberstatus = DisablePoolMemberStatus{Disabled: true}
+		}
+	}
+
+	r, err := backend.Request(common.PUT, u.String(), &memberstatus)
 	if err != nil {
 		return nil, err
 	}

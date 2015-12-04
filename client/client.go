@@ -22,16 +22,16 @@ var returnerror ltm.ErrorLTM
 func GTMWipDelete(c *gin.Context) {
 	var wipdelete gtm.RemoveWip
 
-	f5url, _ := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
+	f5url, err := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.Bind(&wipdelete)
 	res, err := gtm.DeleteGTMWip(f5url, wipdelete.Name)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
-	if res.Status == 200 {
-		res.Status = 201
-	}
 	respondWithStatus(res.Status, "Wide IP deleted", wipdelete.Name,
 		returnerror.ErrorMessage(), common.Conf.Documentation["gtmwideipdocumentationuri"], c)
 }
@@ -397,9 +397,15 @@ func LTMPoolPost(c *gin.Context) {
 func GTMPoolPost(c *gin.Context) {
 	var poolcreate gtm.CreatePool
 
-	f5url, _ := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
+	f5url, err := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.Bind(&poolcreate)
-	res, _ := gtm.PostGTMPool(f5url, &poolcreate)
+	res, err := gtm.PostGTMPool(f5url, &poolcreate)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
 	if res.Status == 200 {
 		res.Status = 201
@@ -412,24 +418,36 @@ func GTMPoolPost(c *gin.Context) {
 func GTMPoolMemberPost(c *gin.Context) {
 	var poolmember gtm.CreatePoolMember
 	pool := c.Params.ByName("pool")
-	f5url, _ := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
+	f5url, err := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.Bind(&poolmember)
-	res, _ := gtm.PostGTMPoolMember(f5url, pool, &poolmember)
+	res, err := gtm.PostGTMPoolMember(f5url, pool, &poolmember)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
 	if res.Status == 200 {
 		res.Status = 201
 	}
 	respondWithStatus(res.Status, "Poolmember added", poolmember.Name,
-		returnerror.ErrorMessage(), common.Conf.Documentation["gtmpooldocumentationuri"], c)
+		returnerror.ErrorMessage(), common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
 }
 
 // GTMWideipPost create new wide IP on a global traffic manager
 func GTMWideipPost(c *gin.Context) {
 	var wideipcreate gtm.CreateWip
 
-	f5url, _ := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
+	f5url, err := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	c.Bind(&wideipcreate)
-	res, _ := gtm.PostGTMWip(f5url, &wideipcreate)
+	res, err := gtm.PostGTMWip(f5url, &wideipcreate)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
 	if res.Status == 200 {
 		res.Status = 201
@@ -449,7 +467,10 @@ func LTMPoolMemberPost(c *gin.Context) {
 	}
 
 	c.Bind(&poolmembercreate)
-	res, _ := ltm.PostLTMPoolMember(f5url, poolname, &poolmembercreate)
+	res, err := ltm.PostLTMPoolMember(f5url, poolname, &poolmembercreate)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
 
 	if res.Status == 200 {
@@ -469,7 +490,10 @@ func LTMPoolPut(c *gin.Context) {
 	}
 
 	c.Bind(&poolmodify)
-	res, _ := ltm.PutLTMPool(f5url, poolmodify.Name, &poolmodify)
+	res, err := ltm.PutLTMPool(f5url, poolmodify.Name, &poolmodify)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
 
 	if res.Status == 200 {
@@ -487,11 +511,11 @@ func LTMPoolDelete(c *gin.Context) {
 		glog.Errorf("%s", err)
 	}
 	c.Bind(&pooldelete)
-	res, _ := ltm.DeleteLTMPool(f5url, pooldelete.Name)
-	json.Unmarshal([]byte(res.Body), &returnerror)
-	if res.Status == 200 {
-		res.Status = 201
+	res, err := ltm.DeleteLTMPool(f5url, pooldelete.Name)
+	if err != nil {
+		glog.Errorf("%s", err)
 	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
 	respondWithStatus(res.Status, "Pool deleted", pooldelete.Name,
 		returnerror.ErrorMessage(), common.Conf.Documentation["ltmpooldocumentationuri"], c)
 }
@@ -499,15 +523,55 @@ func LTMPoolDelete(c *gin.Context) {
 // GTMPoolDelete delete a pool on a global traffic manager
 func GTMPoolDelete(c *gin.Context) {
 	var pooldelete gtm.RemovePool
-	f5url, _ := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
-	c.Bind(&pooldelete)
-	res, _ := gtm.DeleteGTMPool(f5url, pooldelete.Name)
-	json.Unmarshal([]byte(res.Body), &returnerror)
-	if res.Status == 200 {
-		res.Status = 201
+	f5url, err := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
+	if err != nil {
+		glog.Errorf("%s", err)
 	}
+	c.Bind(&pooldelete)
+	res, err := gtm.DeleteGTMPool(f5url, pooldelete.Name)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
 	respondWithStatus(res.Status, "Pool deleted", pooldelete.Name,
 		returnerror.ErrorMessage(), common.Conf.Documentation["gtmpooldocumentationuri"], c)
+}
+
+// GTMPoolMemberDelete delete specific pool members on a global traffic manager
+func GTMPoolMemberDelete(c *gin.Context) {
+	var poolmemberdelete gtm.RemovePoolMember
+	pool := c.Params.ByName("pool")
+	f5url, err := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
+	glog.Infof("%s", f5url)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	c.Bind(&poolmemberdelete)
+	res, err := gtm.DeleteGTMPoolMember(f5url, pool, &poolmemberdelete)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	respondWithStatus(res.Status, "Poolmember deleted", poolmemberdelete.Name,
+		returnerror.ErrorMessage(), common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
+}
+
+// GTMPoolMemberStatusPut modify pool member status on a gocal traffic manager (enabled, disabled)
+func GTMPoolMemberStatusPut(c *gin.Context) {
+	var poolmemberstatus gtm.ModifyPoolMemberStatus
+	pool := c.Params.ByName("pool")
+	f5url, err := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	c.Bind(&poolmemberstatus)
+	res, err := gtm.PutGTMPoolMemberStatus(f5url, pool, &poolmemberstatus)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	respondWithStatus(res.Status, "Poolmember modified", poolmemberstatus.Name,
+		returnerror.ErrorMessage(), common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
 }
 
 // LTMPoolMemberPut modify pool members on a local traffic manager (enabled, disabled, force-offline)
@@ -519,12 +583,15 @@ func LTMPoolMemberPut(c *gin.Context) {
 		glog.Errorf("%s", err)
 	}
 	c.Bind(&poolmembermodify)
-	res, _ := ltm.PutLTMPoolMember(f5url, poolname, poolmembermodify.Name, poolmembermodify.Status)
+	res, err := ltm.PutLTMPoolMember(f5url, poolname, poolmembermodify.Name, poolmembermodify.Status)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
 	if res.Status == 200 {
 		res.Status = 201
 	}
-	respondWithStatus(res.Status, "Pool member modified", poolmembermodify.Name,
+	respondWithStatus(res.Status, "Poolmember modified", poolmembermodify.Name,
 		returnerror.ErrorMessage(), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 }
 
@@ -537,12 +604,12 @@ func LTMPoolMemberDelete(c *gin.Context) {
 		glog.Errorf("%s", err)
 	}
 	c.Bind(&poolmemberdelete)
-	res, _ := ltm.DeleteLTMPoolMember(f5url, poolname, poolmemberdelete.Name)
-	json.Unmarshal([]byte(res.Body), &returnerror)
-	if res.Status == 200 {
-		res.Status = 201
+	res, err := ltm.DeleteLTMPoolMember(f5url, poolname, poolmemberdelete.Name)
+	if err != nil {
+		glog.Errorf("%s", err)
 	}
-	respondWithStatus(res.Status, "Pool member deleted", poolmemberdelete.Name,
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	respondWithStatus(res.Status, "Poolmember deleted", poolmemberdelete.Name,
 		returnerror.ErrorMessage(), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 }
 
@@ -555,7 +622,10 @@ func LTMDataGroupPost(c *gin.Context) {
 		glog.Errorf("%s", err)
 	}
 	c.Bind(&datagroupcreate)
-	res, _ := ltm.PostLTMDataGroup(f5url, direction, &datagroupcreate)
+	res, err := ltm.PostLTMDataGroup(f5url, direction, &datagroupcreate)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
 	if res.Status == 200 {
 		res.Status = 201
@@ -573,11 +643,11 @@ func LTMDataGroupDelete(c *gin.Context) {
 		glog.Errorf("%s", err)
 	}
 	c.Bind(&datagroupdelete)
-	res, _ := ltm.DeleteLTMDataGroup(f5url, direction, datagroupdelete.Name)
-	json.Unmarshal([]byte(res.Body), &returnerror)
-	if res.Status == 200 {
-		res.Status = 201
+	res, err := ltm.DeleteLTMDataGroup(f5url, direction, datagroupdelete.Name)
+	if err != nil {
+		glog.Errorf("%s", err)
 	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
 	respondWithStatus(res.Status, "Datagroup deleted", datagroupdelete.Name,
 		returnerror.ErrorMessage(), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 }
@@ -595,7 +665,10 @@ func LTMDataGroupItemPut(c *gin.Context) {
 	}
 
 	c.Bind(&datagroupitemcreate)
-	res, _ := ltm.PatchLTMDataGroupItem(f5url, direction, datagroupname, &datagroupitemcreate)
+	res, err := ltm.PatchLTMDataGroupItem(f5url, direction, datagroupname, &datagroupitemcreate)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
 	if res.Status == 200 {
 		res.Status = 201
@@ -616,7 +689,10 @@ func LTMDataGroupItemPatch(c *gin.Context) {
 	}
 
 	c.Bind(&datagroupitemcreate)
-	res, _ := ltm.PatchLTMDataGroupItem(f5url, direction, datagroupname, &datagroupitemcreate)
+	res, err := ltm.PatchLTMDataGroupItem(f5url, direction, datagroupname, &datagroupitemcreate)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
 	if res.Status == 200 {
 		res.Status = 201
@@ -700,9 +776,6 @@ func LTMRemoveBlockIPPatch(c *gin.Context) {
 		glog.Errorf("%s", err)
 	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
-	if res.Status == 200 {
-		res.Status = 201
-	}
 	respondWithStatus(res.Status, "IP(s) removed successfully", fmt.Sprintf("%+v", unblockips),
 		returnerror.ErrorMessage(), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 }
