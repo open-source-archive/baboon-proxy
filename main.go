@@ -66,8 +66,10 @@ func main() {
 			privateGTM.POST("/pools", client.GTMPoolPost)
 			privateGTM.POST("/pools/:pool/members", client.GTMPoolMemberPost)
 			privateGTM.POST("/wideips", client.GTMWideipPost)
+			privateGTM.PUT("/pools/:pool/members", client.GTMPoolMemberStatusPut)
 			privateGTM.DELETE("/pools", client.GTMPoolDelete)
 			privateGTM.DELETE("/wideips", client.GTMWipDelete)
+			privateGTM.DELETE("/pools/:pool/members", client.GTMPoolMemberDelete)
 		}
 	}
 	if *ltmenabled {
