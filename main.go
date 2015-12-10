@@ -66,10 +66,14 @@ func main() {
 			privateGTM.POST("/pools", client.GTMPoolPost)
 			privateGTM.POST("/pools/:pool/members", client.GTMPoolMemberPost)
 			privateGTM.POST("/wideips", client.GTMWideipPost)
-			privateGTM.PUT("/pools/:pool/members", client.GTMPoolMemberStatusPut)
 			privateGTM.DELETE("/pools", client.GTMPoolDelete)
 			privateGTM.DELETE("/wideips", client.GTMWipDelete)
 			privateGTM.DELETE("/pools/:pool/members", client.GTMPoolMemberDelete)
+		}
+		emergencyGTM := app.Group("/api/gtms/:trafficmanager")
+		emergencyGTM.Use(ginoauth2.Auth(ginoauth2.UidCheck, *OAuth2Endpoint, emergencyusers))
+		{
+			emergencyGTM.PUT("/pools/:pool/members", client.GTMPoolMemberStatusPut)
 		}
 	}
 	if *ltmenabled {
@@ -110,11 +114,6 @@ func main() {
 			emergencyLTM.PATCH("/blockips", client.LTMBlockIPPatch)
 			emergencyLTM.PATCH("/whiteips", client.LTMWhiteIPPatch)
 			emergencyLTM.DELETE("/blockips", client.LTMRemoveBlockIPPatch)
-		}
-		emergencyGTM := app.Group("/api/gtms/:trafficmanager")
-		emergencyGTM.Use(ginoauth2.Auth(ginoauth2.UidCheck, *OAuth2Endpoint, emergencyusers))
-		{
-			emergencyGTM.PUT("/pools/:pool/members", client.GTMPoolMemberStatusPut)
 		}
 	}
 	switch {
