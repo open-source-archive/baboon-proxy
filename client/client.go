@@ -16,6 +16,13 @@ import (
 	"time"
 )
 
+type Response struct {
+	Type   string `json:"type"`
+	Status int    `json:"status"`
+	Title  string `json:"title"`
+	Detail string `json:"detail"`
+}
+
 var returnerror ltm.ErrorLTM
 
 // GTMWipDelete delete wide ip
@@ -943,17 +950,17 @@ func respondWithStatus(code int, message, name, e, documentation string, c *gin.
 	case 400:
 		c.Set("message", e)
 		c.Header("Content-Type", "application/problem+json")
-		c.JSON(code, gin.H{"type": documentation, "status": code,
-			"title": "Invalid JSON data", "detail": e})
+		c.JSON(code, Response{Type: documentation, Status: code,
+			Title: "Invalid JSON data", Detail: e})
 	case 409:
 		c.Set("message", e)
 		c.Header("Content-Type", "application/problem+json")
-		c.JSON(code, gin.H{"type": documentation, "status": code,
-			"title": "Conflict", "detail": e})
+		c.JSON(code, Response{Type: documentation, Status: code,
+			Title: "Conflict", Detail: e})
 	default:
 		c.Set("message", e)
 		c.Header("Content-Type", "application/problem+json")
-		c.JSON(code, gin.H{"type": documentation, "status": code,
-			"title": e, "detail": e})
+		c.JSON(code, Response{Type: documentation, Status: code,
+			Title: e, Detail: e})
 	}
 }
