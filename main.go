@@ -111,6 +111,11 @@ func main() {
 			emergencyLTM.PATCH("/whiteips", client.LTMWhiteIPPatch)
 			emergencyLTM.DELETE("/blockips", client.LTMRemoveBlockIPPatch)
 		}
+		emergencyGTM := app.Group("/api/gtms/:trafficmanager")
+		emergencyGTM.Use(ginoauth2.Auth(ginoauth2.UidCheck, *OAuth2Endpoint, emergencyusers))
+		{
+			emergencyGTM.PUT("/pools/:pool/members", client.GTMPoolMemberStatusPut)
+		}
 	}
 	switch {
 	case *sslenabled:
