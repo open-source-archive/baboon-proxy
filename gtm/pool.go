@@ -2,10 +2,11 @@ package gtm
 
 import (
 	"fmt"
-	"github.com/zalando-techmonkeys/baboon-proxy/backend"
-	"github.com/zalando-techmonkeys/baboon-proxy/common"
 	"net/url"
 	"path"
+
+	"github.com/zalando-techmonkeys/baboon-proxy/backend"
+	"github.com/zalando-techmonkeys/baboon-proxy/common"
 )
 
 var (
@@ -29,6 +30,7 @@ type Pool struct {
 	Fullpath                  string `json:"fullPath"`
 	Generation                int    `json:"generation"`
 	Alternatemode             string `json:"alternateMode"`
+	Canonicialname            string `json:"canonicalName"`
 	Dynamicratio              string `json:"dynamicRatio"`
 	Enabled                   bool   `json:"enabled"`
 	Fallbackipv4              string `json:"fallbackIpv4"`
@@ -64,6 +66,8 @@ type CreatePool struct {
 	Members []CreatePoolMember `json:"members" binding:"required"`
 	Monitor string             `json:"monitor",binding:"required"`
 }
+
+// CreatePoolMember struct to create a member in a pool
 type CreatePoolMember struct {
 	Name         string `json:"name" binding:"required"`
 	Loadbalancer string `json:"loadbalancer,omitempty"`
@@ -83,17 +87,35 @@ type RemovePoolMember struct {
 	Loadbalancer string `json:"loadbalancer" binding:"required"`
 }
 
+// ModifyPoolMemberStatus struct to modify pool member status on gtm
 type ModifyPoolMemberStatus struct {
 	Name         string `json:"name" binding:"required"`
 	Loadbalancer string `json:"loadbalancer" binding:"required"`
 	Status       bool   `json:"status" binding:"required"`
 }
 
+// ModifyPoolStatus struct to modify a pool status client-side
+type ModifyPoolStatus struct {
+	Status bool `json:"status"`
+}
+
+// EnablePoolMemberStatus enables a gtm pool member client-side
 type EnablePoolMemberStatus struct {
 	Enabled bool `json:"enabled" binding:"required"`
 }
 
+// DisablePoolMemberStatus disables a gtm pool member client-side
 type DisablePoolMemberStatus struct {
+	Disabled bool `json:"disabled" binding:"required"`
+}
+
+// EnablePoolStatus enables a gtm pool client-side
+type EnablePoolStatus struct {
+	Enabled bool `json:"enabled" binding:"required"`
+}
+
+// DisablePoolStatus disables a gtm pool client-side
+type DisablePoolStatus struct {
 	Disabled bool `json:"disabled" binding:"required"`
 }
 
@@ -232,7 +254,7 @@ func DeleteGTMPool(host, pool string) (*backend.Response, error) {
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri)
-	u.Path = path.Join(u.Path, fmt.Sprintf("/~%s~", gtmPartition, pool))
+	u.Path = path.Join(u.Path, fmt.Sprintf("/~%s~%s", gtmPartition, pool))
 	r, err := backend.Request(common.DELETE, u.String(), nil)
 	if err != nil {
 		return nil, err
@@ -266,7 +288,7 @@ func PutGTMPoolMemberStatus(host, pool string, poolmember *ModifyPoolMemberStatu
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri)
-	u.Path = path.Join(u.Path, fmt.Sprintf("/%s/members/~%s~%s:~%s~%s", pool, gtmPartition,
+	u.Path = path.Join(u.Path, fmt.Sprintf("/~%s~%s/members/~%s~%s:~%s~%s", gtmPartition, pool, gtmPartition,
 		poolmember.Loadbalancer, ltmPartition, poolmember.Name))
 	var memberstatus interface{}
 	switch poolmember.Status {
@@ -281,6 +303,34 @@ func PutGTMPoolMemberStatus(host, pool string, poolmember *ModifyPoolMemberStatu
 	}
 
 	r, err := backend.Request(common.PUT, u.String(), &memberstatus)
+	if err != nil {
+		return nil, err
+	}
+	return r, nil
+}
+
+// PutGTMPoolStatus modify status of wideip pool
+func PutGTMPoolStatus(host, pool string, poolmodify *ModifyPoolStatus) (*backend.Response, error) {
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, err
+	}
+	u.Scheme = common.Protocol
+	u.Path = path.Join(u.Path, common.Gtmpoolsuri)
+	u.Path = path.Join(u.Path, fmt.Sprintf("/~%s~%s", gtmPartition, pool))
+	var poolstatus interface{}
+	switch poolmodify.Status {
+	case true:
+		{
+			poolstatus = EnablePoolStatus{Enabled: true}
+		}
+	case false:
+		{
+			poolstatus = DisablePoolStatus{Disabled: true}
+		}
+	}
+
+	r, err := backend.Request(common.PUT, u.String(), &poolstatus)
 	if err != nil {
 		return nil, err
 	}

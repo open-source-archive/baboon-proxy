@@ -3,17 +3,18 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"net/url"
+	"path"
+	"strings"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang/glog"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
 	"github.com/zalando-techmonkeys/baboon-proxy/gtm"
 	"github.com/zalando-techmonkeys/baboon-proxy/ltm"
 	"github.com/zalando-techmonkeys/baboon-proxy/util"
-	"net/http"
-	"net/url"
-	"path"
-	"strings"
-	"time"
 )
 
 type Response struct {
@@ -82,11 +83,10 @@ func GTMWipNameList(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	poolsURI := util.ReplaceGTMWipUritoGTMPoolURI(c.Request.RequestURI)
 	for i, pool := range gtmwipnamelist.Pools {
 		u := new(url.URL)
 		u.Scheme = common.Protocol
-		u.Path = path.Join(c.Request.Host, poolsURI, pool.Name)
+		u.Path = path.Join(c.Request.Host, "/api/gtms", tm, "/pools/", pool.Name)
 		gtmwipnamelist.Pools[i].PoolsReference = u.String()
 	}
 	c.JSON(http.StatusOK, gin.H{"message": gtmwipnamelist})
@@ -133,6 +133,35 @@ func GTMPoolList(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": gtmpoollist})
 }
 
+// GTMIRuleList show global traffic manager iRules
+func GTMIRuleList(c *gin.Context) {
+	tm := c.Params.ByName("trafficmanager")
+	f5url, err := gtm.Trafficmanager(tm)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
+	}
+	gtmirulelist, err := gtm.ShowGTMIRules(f5url)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	c.JSON(http.StatusOK, gin.H{"message": gtmirulelist})
+}
+
+// GTMIRuleNameList show specfic global traffic manager iRule
+func GTMIRuleNameList(c *gin.Context) {
+	tm := c.Params.ByName("trafficmanager")
+	f5url, err := gtm.Trafficmanager(tm)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
+	}
+	irule := c.Params.ByName("irule")
+	gtmirulenamelist, err := gtm.ShowGTMIRule(f5url, irule)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	c.JSON(http.StatusOK, gin.H{"message": gtmirulenamelist})
+}
+
 // LTMPoolNameList show specific local traffic manager pool
 func LTMPoolNameList(c *gin.Context) {
 	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
@@ -149,6 +178,33 @@ func LTMPoolNameList(c *gin.Context) {
 	u.Path = path.Join(c.Request.Host, c.Request.RequestURI, common.MembersURI)
 	poolnamelist.MembersReference = u.String()
 	c.JSON(http.StatusOK, gin.H{"message": poolnamelist})
+}
+
+// LTMIRuleNameList show specific iRule
+func LTMIRuleNameList(c *gin.Context) {
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	irule := c.Params.ByName("irule")
+	irulenamelist, err := ltm.ShowLTMIRule(f5url, irule)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	c.JSON(http.StatusOK, gin.H{"message": irulenamelist})
+}
+
+// LTMIRuleList show all iRules
+func LTMIRuleList(c *gin.Context) {
+	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	irulelist, err := ltm.ShowLTMIRules(f5url)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	c.JSON(http.StatusOK, gin.H{"message": irulelist})
 }
 
 // GTMPoolNameList show specific global traffic manager pool
@@ -605,7 +661,7 @@ func GTMPoolMemberDelete(c *gin.Context) {
 	}
 }
 
-// GTMPoolMemberStatusPut modify pool member status on a gocal traffic manager (enabled, disabled)
+// GTMPoolMemberStatusPut modify pool member status on a global traffic manager (enabled, disabled)
 func GTMPoolMemberStatusPut(c *gin.Context) {
 	var poolmemberstatus gtm.ModifyPoolMemberStatus
 	pool := c.Params.ByName("pool")
@@ -624,6 +680,28 @@ func GTMPoolMemberStatusPut(c *gin.Context) {
 		json.Unmarshal([]byte(res.Body), &returnerror)
 		respondWithStatus(res.Status, "Poolmember modified", poolmemberstatus.Name,
 			returnerror.ErrorMessage(), common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
+	}
+}
+
+// GTMPoolStatusPut modify pool member status on a global traffic manager (enabled, disabled)
+func GTMPoolStatusPut(c *gin.Context) {
+	var poolstatus gtm.ModifyPoolStatus
+	pool := c.Params.ByName("pool")
+	f5url, err := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	if err := c.Bind(&poolstatus); err != nil {
+		respondWithStatus(400, "Invalid JSON data", "Modify pool status",
+			fmt.Sprintf("%s", err), common.Conf.Documentation["gtmpooldocumentationuri"], c)
+	} else {
+		res, err := gtm.PutGTMPoolStatus(f5url, pool, &poolstatus)
+		if err != nil {
+			glog.Errorf("%s", err)
+		}
+		json.Unmarshal([]byte(res.Body), &returnerror)
+		respondWithStatus(res.Status, "Pool modified", pool,
+			returnerror.ErrorMessage(), common.Conf.Documentation["gtmpooldocumentationuri"], c)
 	}
 }
 

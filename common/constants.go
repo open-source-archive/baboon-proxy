@@ -28,6 +28,9 @@ const Gtmpoolsuri = "/mgmt/tm/gtm/pool"
 // Gtmwipsuri Global Traffic Manager WideIP Path
 const Gtmwipsuri = "/mgmt/tm/gtm/wideip"
 
+// Gtmirulesuri Global Traffic Manager IRules Path
+const Gtmirulesuri = "/mgmt/tm/gtm/rule"
+
 // Dg Local Traffic Manager DataGroup Path
 const Dg = "data-group/"
 
