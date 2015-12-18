@@ -3,14 +3,15 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"strconv"
+
 	"github.com/gin-gonic/contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/glog"
 	"github.com/zalando-techmonkeys/baboon-proxy/client"
 	"github.com/zalando-techmonkeys/baboon-proxy/config"
 	"github.com/zalando-techmonkeys/gin-oauth2"
-	"os"
-	"strconv"
 )
 
 var (
@@ -59,6 +60,8 @@ func main() {
 			publicGTM.GET("/pools/:pool/members", client.GTMPoolMemberList)
 			publicGTM.GET("/wideips", client.GTMWipList)
 			publicGTM.GET("/wideips/:wideip", client.GTMWipNameList)
+			publicGTM.GET("/irules", client.GTMIRuleList)
+			publicGTM.GET("/irules/:irule", client.GTMIRuleNameList)
 		}
 		privateGTM := app.Group("/api/gtms/:trafficmanager")
 		privateGTM.Use(ginoauth2.Auth(ginoauth2.UidCheck, *OAuth2Endpoint, rootusers))
@@ -74,6 +77,7 @@ func main() {
 		emergencyGTM.Use(ginoauth2.Auth(ginoauth2.UidCheck, *OAuth2Endpoint, emergencyusers))
 		{
 			emergencyGTM.PUT("/pools/:pool/members", client.GTMPoolMemberStatusPut)
+			emergencyGTM.PUT("/pools/:pool", client.GTMPoolStatusPut)
 		}
 	}
 	if *ltmenabled {
@@ -91,6 +95,8 @@ func main() {
 			publicLTM.GET("/datagroups", client.LTMDataGroupList)
 			publicLTM.GET("/datagroups/:datagroupname", client.LTMDataGroupNameList)
 			publicLTM.GET("/blockips", client.LTMAddressList)
+			publicLTM.GET("/irules", client.LTMIRuleList)
+			publicLTM.GET("/irules/:irule", client.LTMIRuleNameList)
 		}
 		privateLTM := app.Group("/api/ltms/:lbpair")
 		privateLTM.Use(ginoauth2.Auth(ginoauth2.UidCheck, *OAuth2Endpoint, rootusers))
