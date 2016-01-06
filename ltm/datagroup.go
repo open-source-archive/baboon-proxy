@@ -37,11 +37,11 @@ type DataGroup struct {
 
 // CreateDataGroup struct to create a datagroup
 type CreateDataGroup struct {
-	Name    string `json:"name",binding:"required"`
-	Type    string `json:"type",binding:"required"`
+	Name    string `json:"name" binding:"required"`
+	Type    string `json:"type" binding:"required"`
 	Records []struct {
-		Name string `json:"name",binding:"required"`
-		Data string `json:"data",binding:"required"`
+		Name string `json:"name" binding:"required"`
+		Data string `json:"data" binding:"required"`
 	} `json:"records" binding:"required"`
 }
 

@@ -34,7 +34,7 @@ func GTMWipDelete(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	if err := c.Bind(&wipdelete); err != nil {
+	if err := c.BindJSON(&wipdelete); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Delete wideip",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["gtmwideipdocumentationuri"], c)
 	} else {
@@ -403,7 +403,7 @@ func LTMVirtualServerPost(c *gin.Context) {
 		glog.Errorf("%s", err)
 	}
 
-	if err := c.Bind(&vservercreate); err != nil {
+	if err := c.BindJSON(&vservercreate); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Create virtual server",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmvirtualdocumentationuri"], c)
 	} else {
@@ -426,7 +426,7 @@ func LTMSSLKeyPost(c *gin.Context) {
 	sslkeycreate.Command = "install"
 	//lbpair := c.Params.ByName("lbpair")
 	//f5url := DeviceActive(lbpair)
-	c.Bind(&sslkeycreate)
+	c.BindJSON(&sslkeycreate)
 	res, _ := ltm.PostLTMSSLKey(common.CryptoURL, &sslkeycreate)
 	json.Unmarshal([]byte(res.Body), &returnerror)
 	switch res.Status {
@@ -454,7 +454,7 @@ func LTMPoolPost(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	if err := c.Bind(&poolcreate); err != nil {
+	if err := c.BindJSON(&poolcreate); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Create pool",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmpooldocumentationuri"], c)
 	} else {
@@ -476,7 +476,7 @@ func GTMPoolPost(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	if err := c.Bind(&poolcreate); err != nil {
+	if err := c.BindJSON(&poolcreate); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Create pool",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["gtmpooldocumentationuri"], c)
 	} else {
@@ -501,7 +501,7 @@ func GTMPoolMemberPost(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	if err := c.Bind(&poolmember); err != nil {
+	if err := c.BindJSON(&poolmember); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Add pool member",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
 	} else {
@@ -526,7 +526,7 @@ func GTMWideipPost(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	if err := c.Bind(&wideipcreate); err != nil {
+	if err := c.BindJSON(&wideipcreate); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Create wideip",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["gtmwideipdocumentationuri"], c)
 	} else {
@@ -553,8 +553,7 @@ func LTMPoolMemberPost(c *gin.Context) {
 		glog.Errorf("%s", err)
 	}
 
-	c.Bind(&poolmembercreate)
-	if err := c.Bind(&poolmembercreate); err != nil {
+	if err := c.BindJSON(&poolmembercreate); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Create pool member",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 	} else {
@@ -581,7 +580,7 @@ func LTMPoolPut(c *gin.Context) {
 		glog.Errorf("%s", err)
 	}
 
-	if err := c.Bind(&poolmodify); err != nil {
+	if err := c.BindJSON(&poolmodify); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Modify pool",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmpooldocumentationuri"], c)
 	} else {
@@ -603,7 +602,7 @@ func LTMPoolDelete(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	if err := c.Bind(&pooldelete); err != nil {
+	if err := c.BindJSON(&pooldelete); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Delete pool",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmpooldocumentationuri"], c)
 	} else {
@@ -624,7 +623,7 @@ func GTMPoolDelete(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	if err := c.Bind(&pooldelete); err != nil {
+	if err := c.BindJSON(&pooldelete); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Delete pool",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["gtmpooldocumentationuri"], c)
 	} else {
@@ -647,7 +646,7 @@ func GTMPoolMemberDelete(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	if err := c.Bind(&poolmemberdelete); err != nil {
+	if err := c.BindJSON(&poolmemberdelete); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Delete pool member",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
 	} else {
@@ -669,7 +668,7 @@ func GTMPoolMemberStatusPut(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	if err := c.Bind(&poolmemberstatus); err != nil {
+	if err := c.BindJSON(&poolmemberstatus); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Modify pool member status",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
 	} else {
@@ -691,7 +690,7 @@ func GTMPoolStatusPut(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	if err := c.Bind(&poolstatus); err != nil {
+	if err := c.BindJSON(&poolstatus); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Modify pool status",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["gtmpooldocumentationuri"], c)
 	} else {
@@ -713,7 +712,7 @@ func LTMPoolMemberPut(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	if err := c.Bind(&poolmembermodify); err != nil {
+	if err := c.BindJSON(&poolmembermodify); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Modify pool member",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 	} else {
@@ -738,7 +737,7 @@ func LTMPoolMemberDelete(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	if err := c.Bind(&poolmemberdelete); err != nil {
+	if err := c.BindJSON(&poolmemberdelete); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Delete pool member",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 	} else {
@@ -760,8 +759,7 @@ func LTMDataGroupPost(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	c.Bind(&datagroupcreate)
-	if err := c.Bind(&datagroupcreate); err != nil {
+	if err := c.BindJSON(&datagroupcreate); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Create datagroup item",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 	} else {
@@ -786,8 +784,7 @@ func LTMDataGroupDelete(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	c.Bind(&datagroupdelete)
-	if err := c.Bind(&datagroupdelete); err != nil {
+	if err := c.BindJSON(&datagroupdelete); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Delete datagroup item",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 	} else {
@@ -813,7 +810,7 @@ func LTMDataGroupItemPut(c *gin.Context) {
 		glog.Errorf("%s", err)
 	}
 
-	if err := c.Bind(&datagroupitemcreate); err != nil {
+	if err := c.BindJSON(&datagroupitemcreate); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Create datagroup item",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 	} else {
@@ -841,8 +838,7 @@ func LTMDataGroupItemPatch(c *gin.Context) {
 		glog.Errorf("%s", err)
 	}
 
-	c.Bind(&datagroupitemcreate)
-	if err := c.Bind(&datagroupitemcreate); err != nil {
+	if err := c.BindJSON(&datagroupitemcreate); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Create datagroup item",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 	} else {
@@ -883,7 +879,7 @@ func LTMBlockIPPatch(c *gin.Context) {
 		glog.Errorf("%s", err)
 	}
 	f5url = strings.Replace(f5url, common.LtmURI, "", -1)
-	if err := c.Bind(&blockips); err != nil {
+	if err := c.BindJSON(&blockips); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Block IPs",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 	} else {
@@ -909,7 +905,7 @@ func LTMWhiteIPPatch(c *gin.Context) {
 		glog.Errorf("%s", err)
 	}
 	f5url = strings.Replace(f5url, common.LtmURI, "", -1)
-	if err := c.Bind(&whiteips); err != nil {
+	if err := c.BindJSON(&whiteips); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "White IPs",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 	} else {
@@ -935,7 +931,7 @@ func LTMRemoveBlockIPPatch(c *gin.Context) {
 		glog.Errorf("%s", err)
 	}
 	f5url = strings.Replace(f5url, common.LtmURI, "", -1)
-	if err := c.Bind(&unblockips); err != nil {
+	if err := c.BindJSON(&unblockips); err != nil {
 		respondWithStatus(400, "Invalid JSON data", "Unblock IPs",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 	} else {
