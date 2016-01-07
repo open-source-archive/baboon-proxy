@@ -16,5 +16,5 @@ Baboon proxy is a RESTful service for F5 Local Traffic Manager (LTM) and Global 
 
 ## Documentation:
 
-[![Baboon Proxy Read the Docs](https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/index.html)]
+[Baboon Proxy Read the Docs](https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/index.html)
 
