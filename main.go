@@ -19,10 +19,12 @@ var (
 	sslenabled *bool
 	gtmenabled *bool
 	ltmenabled *bool
+	Buildstamp = "No BuildStamp Provided"
+	Githash    = "No GitHash Provided"
 )
 
 func usage() {
-	fmt.Fprint(os.Stderr, "usage: baboon-proxy -port=80 -ssl-enabled=false -ltm-enabled=false -gtm-enabled=false -stderrthreshold=[INFO|WARN|FATAL] -log_dir=[string]\n")
+	fmt.Fprint(os.Stderr, fmt.Sprintf("Build Time: %s\nGit Commit Hash: %s\n\nUsage: ./baboon-proxy \n\t-port=80 \n\t-ssl-enabled=false \n\t-ltm-enabled=false \n\t-gtm-enabled=false \n\t-stderrthreshold=[INFO|WARN|FATAL] \n\t-log_dir=[string]\n\nExplanation:\n", Buildstamp, Githash))
 	flag.PrintDefaults()
 	os.Exit(2)
 }
@@ -30,8 +32,8 @@ func usage() {
 func init() {
 	port = flag.Int("port", 80, "Default Port")
 	sslenabled = flag.Bool("ssl-enabled", false, "enable SSL")
-	ltmenabled = flag.Bool("ltm-enabled", false, "enable LTM")
-	gtmenabled = flag.Bool("gtm-enabled", false, "enable GTM")
+	ltmenabled = flag.Bool("ltm-enabled", false, "enable LTM feature")
+	gtmenabled = flag.Bool("gtm-enabled", false, "enable GTM feature")
 	flag.Usage = usage
 	flag.Parse()
 }
