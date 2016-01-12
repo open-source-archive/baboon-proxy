@@ -1,10 +1,11 @@
 # baboon-proxy
 [![Build Status](https://travis-ci.org/zalando-techmonkeys/baboon-proxy.svg?branch=master)](https://travis-ci.org/zalando-techmonkeys/baboon-proxy)
 [![license](http://img.shields.io/badge/license-MIT-yellow.svg?style=flat)](https://raw.githubusercontent.com/zalando-techmonkeys/baboon-proxy/master/LICENSE)
+[![Go Report Card](http://goreportcard.com/badge/zalando-techmonkeys/baboon-proxy)](http://goreportcard.com/report/zalando-techmonkeys/baboon-proxy)
 
 ## F5 GTM/LTM Proxy API with OAuth2
 
-Baboon proxy is a RESTful service for F5 Local Traffic Manager (LTM) and Global Traffic Manager (GTM) via REST API. 
+Baboon proxy is a RESTful service for F5 Local Traffic Manager (LTM) and Global Traffic Manager (GTM) via REST API.
 
 ## Features:
 
@@ -17,4 +18,3 @@ Baboon proxy is a RESTful service for F5 Local Traffic Manager (LTM) and Global 
 ## Documentation:
 
 [Baboon Proxy Read the Docs](https://techmonkeys.readthedocs.org/en/latest/baboon-proxy/index.html)
-
