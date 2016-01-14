@@ -92,35 +92,35 @@ type CreateVirtualServer struct {
 }
 
 // ShowLTMVirtualServer show all virtual server
-func ShowLTMVirtualServer(host string) (*VirtualServers, error) {
+func ShowLTMVirtualServer(host string) (*backend.Response, *VirtualServers, error) {
 	// Declaration LTM virtual server
 	ltmvirtualserver := new(VirtualServers)
 	u, err := url.Parse(host)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	u.Path = path.Join(u.Path, "virtual")
-	_, err = backend.Request(common.GET, u.String(), ltmvirtualserver)
+	res, err := backend.Request(common.GET, u.String(), ltmvirtualserver)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return ltmvirtualserver, nil
+	return res, ltmvirtualserver, nil
 }
 
 // ShowLTMVirtualServerName show specific virtual server
-func ShowLTMVirtualServerName(host, vserver string) (*VirtualServer, error) {
+func ShowLTMVirtualServerName(host, vserver string) (*backend.Response, *VirtualServer, error) {
 	// Declaration LTM virtual server name
 	ltmvirtualservername := new(VirtualServer)
 	u, err := url.Parse(host)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	u.Path = path.Join(u.Path, fmt.Sprintf("virtual/~%s~%s", ltmPartition, vserver))
-	_, err = backend.Request(common.GET, u.String(), &ltmvirtualservername)
+	res, err := backend.Request(common.GET, u.String(), &ltmvirtualservername)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return ltmvirtualservername, nil
+	return res, ltmvirtualservername, nil
 }
 
 // PostLTMVirtualServer create a new virtual server

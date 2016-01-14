@@ -153,53 +153,53 @@ type PoolMember struct {
 }
 
 // ShowGTMPools shows all declared pools on gtm
-func ShowGTMPools(host string) (*Pools, error) {
+func ShowGTMPools(host string) (*backend.Response, *Pools, error) {
 	gtmpools := new(Pools)
 	u, err := url.Parse(host)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri)
-	_, err = backend.Request(common.GET, u.String(), &gtmpools)
+	res, err := backend.Request(common.GET, u.String(), &gtmpools)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return gtmpools, nil
+	return res, gtmpools, nil
 }
 
 // ShowGTMPool shows specific declared pool on gtm
-func ShowGTMPool(host, pool string) (*Pool, error) {
+func ShowGTMPool(host, pool string) (*backend.Response, *Pool, error) {
 	// Declaration GTM Pool
 	gtmpool := new(Pool)
 	u, err := url.Parse(host)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri, fmt.Sprintf("/~%s~%s", gtmPartition, pool))
-	_, err = backend.Request(common.GET, u.String(), &gtmpool)
+	res, err := backend.Request(common.GET, u.String(), &gtmpool)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return gtmpool, nil
+	return res, gtmpool, nil
 }
 
 //ShowGTMPoolMembers shows members on a specific pool
-func ShowGTMPoolMembers(host, pool string) (*PoolMembers, error) {
+func ShowGTMPoolMembers(host, pool string) (*backend.Response, *PoolMembers, error) {
 	// Declaration GTM Pool Member
 	gtmpoolmembers := new(PoolMembers)
 	u, err := url.Parse(host)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri, fmt.Sprintf("/~%s~%s/members", gtmPartition, pool))
-	_, err = backend.Request(common.GET, u.String(), &gtmpoolmembers)
+	res, err := backend.Request(common.GET, u.String(), &gtmpoolmembers)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return gtmpoolmembers, nil
+	return res, gtmpoolmembers, nil
 }
 
 //PostGTMPool creates a new pool on a trafficmanager

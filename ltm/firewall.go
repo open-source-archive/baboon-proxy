@@ -38,33 +38,33 @@ type AddressList struct {
 }
 
 // ShowLTMAddressList returns a specific address list on LB
-func ShowLTMAddressList(host, address string) (*AddressList, error) {
+func ShowLTMAddressList(host, address string) (*backend.Response, *AddressList, error) {
 	addresslist := new(AddressList)
 	u, err := url.Parse(host)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	u.Path = path.Join(u.Path, common.AddressList, address)
-	_, err = backend.Request(common.GET, u.String(), addresslist)
+	res, err := backend.Request(common.GET, u.String(), addresslist)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return addresslist, nil
+	return res, addresslist, nil
 }
 
 // ShowLTMAddressList returns a specific address list on LB
-func ShowLTMAddressListName(host, address string) (*AddressList, error) {
+func ShowLTMAddressListName(host, address string) (*backend.Response, *AddressList, error) {
 	addresslist := new(AddressList)
 	u, err := url.Parse(host)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	u.Path = path.Join(u.Path, common.AddressList, address)
-	_, err = backend.Request(common.GET, u.String(), addresslist)
+	res, err := backend.Request(common.GET, u.String(), addresslist)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return addresslist, nil
+	return res, addresslist, nil
 }
 
 // PatchLTMBlockAddresses to block IPs
@@ -72,11 +72,11 @@ func ShowLTMAddressListName(host, address string) (*AddressList, error) {
 // its necessary to get all entries first
 func PatchLTMBlockAddresses(host string, blockIP *CreateAddresses) (*backend.Response, error) {
 
-	whiteIP, err := ShowLTMAddressListName(host, common.WhiteList)
+	_, whiteIP, err := ShowLTMAddressListName(host, common.WhiteList)
 	if err != nil {
 		return nil, err
 	}
-	blackIP, err := ShowLTMAddressListName(host, common.BlackList)
+	_, blackIP, err := ShowLTMAddressListName(host, common.BlackList)
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +144,7 @@ func DeleteLTMBlockAddresses(host string, deleteIP *DeleteAddresses) (*backend.R
 	}
 	u.Path = path.Join(u.Path, common.AddressList, common.BlackList)
 
-	blackIP, err := ShowLTMAddressListName(host, common.BlackList)
+	_, blackIP, err := ShowLTMAddressListName(host, common.BlackList)
 	if err != nil {
 		return nil, err
 	}
@@ -182,7 +182,7 @@ func DeleteLTMBlockAddresses(host string, deleteIP *DeleteAddresses) (*backend.R
 // its necessary to get all entries first
 func PatchLTMWhiteAddresses(host string, whiteIP *CreateAddresses) (*backend.Response, error) {
 
-	white, err := ShowLTMAddressListName(host, common.WhiteList)
+	_, white, err := ShowLTMAddressListName(host, common.WhiteList)
 	if err != nil {
 		return nil, err
 	}

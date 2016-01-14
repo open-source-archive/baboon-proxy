@@ -27,17 +27,17 @@ type Profiles struct {
 }
 
 // ShowLTMProfile show profiles from a virtual server
-func ShowLTMProfile(host, vserver string) (*Profiles, error) {
+func ShowLTMProfile(host, vserver string) (*backend.Response, *Profiles, error) {
 	// Declaration LTM Profile
 	ltmprofile := new(Profiles)
 	u, err := url.Parse(host)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	u.Path = path.Join(u.Path, fmt.Sprintf("virtual/~%s~%s/profiles", ltmPartition, vserver))
-	_, err = backend.Request(common.GET, u.String(), &ltmprofile)
+	res, err := backend.Request(common.GET, u.String(), &ltmprofile)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return ltmprofile, nil
+	return res, ltmprofile, nil
 }

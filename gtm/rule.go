@@ -28,33 +28,33 @@ type IRule struct {
 }
 
 // ShowGTMIRules shows iRules
-func ShowGTMIRules(host string) (*IRules, error) {
+func ShowGTMIRules(host string) (*backend.Response, *IRules, error) {
 	iRs := new(IRules)
 	u, err := url.Parse(host)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmirulesuri)
-	_, err = backend.Request(common.GET, u.String(), &iRs)
+	res, err := backend.Request(common.GET, u.String(), &iRs)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return iRs, nil
+	return res, iRs, nil
 }
 
 // ShowGTMIRule shows a specific iRule
-func ShowGTMIRule(host, iRuleName string) (*IRule, error) {
+func ShowGTMIRule(host, iRuleName string) (*backend.Response, *IRule, error) {
 	iR := new(IRule)
 	u, err := url.Parse(host)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmirulesuri, fmt.Sprintf("/%s", iRuleName))
-	_, err = backend.Request(common.GET, u.String(), &iR)
+	res, err := backend.Request(common.GET, u.String(), &iR)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return iR, nil
+	return res, iR, nil
 }

@@ -45,34 +45,46 @@ type FirewallRules struct {
 }
 
 // ShowLTMFWRules shows firewall profile
-func ShowLTMFWRules(host, vserver string) *FirewallRules {
+func ShowLTMFWRules(host, vserver string) (*backend.Response, *FirewallRules, error) {
 	fwrules := new(FirewallRules)
-	u, _ := url.Parse(host)
+	u, err := url.Parse(host)
+	if err != nil {
+		return nil, nil, err
+	}
 	u.Path = path.Join(u.Path, fmt.Sprintf("virtual/~%s~%s/fw-rules", ltmPartition, vserver))
-	backend.Request(common.GET, u.String(), &fwrules)
-	return fwrules
+	res, err := backend.Request(common.GET, u.String(), &fwrules)
+	if err != nil {
+		return nil, nil, err
+	}
+	return res, fwrules, nil
 }
 
 // ShowLTMIRules shows iRules
-func ShowLTMIRules(host string) (*IRules, error) {
+func ShowLTMIRules(host string) (*backend.Response, *IRules, error) {
 	iRs := new(IRules)
-	u, _ := url.Parse(host)
-	u.Path = path.Join(u.Path, "rule")
-	_, err := backend.Request(common.GET, u.String(), &iRs)
+	u, err := url.Parse(host)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return iRs, nil
+	u.Path = path.Join(u.Path, "rule")
+	res, err := backend.Request(common.GET, u.String(), &iRs)
+	if err != nil {
+		return nil, nil, err
+	}
+	return res, iRs, nil
 }
 
 // ShowLTMIRule shows a specific iRule
-func ShowLTMIRule(host, iRuleName string) (*IRule, error) {
+func ShowLTMIRule(host, iRuleName string) (*backend.Response, *IRule, error) {
 	iR := new(IRule)
-	u, _ := url.Parse(host)
-	u.Path = path.Join(u.Path, fmt.Sprintf("rule/~%s~%s", ltmPartition, iRuleName))
-	_, err := backend.Request(common.GET, u.String(), &iR)
+	u, err := url.Parse(host)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return iR, nil
+	u.Path = path.Join(u.Path, fmt.Sprintf("rule/~%s~%s", ltmPartition, iRuleName))
+	res, err := backend.Request(common.GET, u.String(), &iR)
+	if err != nil {
+		return nil, nil, err
+	}
+	return res, iR, nil
 }

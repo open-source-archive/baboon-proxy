@@ -59,35 +59,35 @@ type RemoveDataGroup struct {
 }
 
 // ShowLTMDataGroup lists all datagroups on a loadbalancer
-func ShowLTMDataGroup(host, source string) (*DataGroups, error) {
+func ShowLTMDataGroup(host, source string) (*backend.Response, *DataGroups, error) {
 	// Declaration LTM DataGroup
 	ltmdatagroup := new(DataGroups)
 	u, err := url.Parse(host)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	u.Path = path.Join(u.Path, common.Dg, source)
-	_, err = backend.Request(common.GET, u.String(), ltmdatagroup)
+	res, err := backend.Request(common.GET, u.String(), ltmdatagroup)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return ltmdatagroup, nil
+	return res, ltmdatagroup, nil
 }
 
 // ShowLTMDataGroupName lists a specific datagroup on a loadbalancer
-func ShowLTMDataGroupName(host, direction, datagroupname string) (*DataGroup, error) {
+func ShowLTMDataGroupName(host, direction, datagroupname string) (*backend.Response, *DataGroup, error) {
 	// Declaration LTM DataGroup by Name
 	ltmdatagroupname := new(DataGroup)
 	u, err := url.Parse(host)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	u.Path = path.Join(u.Path, common.Dg, direction, "/", datagroupname)
-	_, err = backend.Request(common.GET, u.String(), ltmdatagroupname)
+	res, err := backend.Request(common.GET, u.String(), ltmdatagroupname)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return ltmdatagroupname, nil
+	return res, ltmdatagroupname, nil
 }
 
 // PostLTMDataGroup creates a new datagroup
@@ -129,7 +129,7 @@ func PatchLTMDataGroupItem(host, direction, datagroup string, json *CreateDataGr
 	}
 	u.Path = path.Join(u.Path, common.Dg, direction, "/", datagroup)
 
-	data, err := ShowLTMDataGroupName(host, direction, datagroup)
+	_, data, err := ShowLTMDataGroupName(host, direction, datagroup)
 	if err != nil {
 		return nil, err
 	}

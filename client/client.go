@@ -55,7 +55,7 @@ func GTMWipList(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
 	}
-	gtmwiplist, err := gtm.ShowGTMWips(f5url)
+	res, gtmwiplist, err := gtm.ShowGTMWips(f5url)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
@@ -68,7 +68,7 @@ func GTMWipList(c *gin.Context) {
 			wip.Pools[i].PoolsReference = u.String()
 		}
 	}
-	c.JSON(http.StatusOK, gin.H{"message": gtmwiplist})
+	respondWithStatus(res.Status, "", gtmwiplist, "", "", c)
 }
 
 // GTMWipNameList show a specific wide ip
@@ -79,7 +79,7 @@ func GTMWipNameList(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
 	}
-	gtmwipnamelist, err := gtm.ShowGTMWip(f5url, wideip)
+	res, gtmwipnamelist, err := gtm.ShowGTMWip(f5url, wideip)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
@@ -89,7 +89,7 @@ func GTMWipNameList(c *gin.Context) {
 		u.Path = path.Join(c.Request.Host, "/api/gtms", tm, "/pools/", pool.Name)
 		gtmwipnamelist.Pools[i].PoolsReference = u.String()
 	}
-	c.JSON(http.StatusOK, gin.H{"message": gtmwipnamelist})
+	respondWithStatus(res.Status, "", gtmwipnamelist, "", "", c)
 }
 
 // LTMPoolList show local traffic manager pools
@@ -100,7 +100,7 @@ func LTMPoolList(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	poollist, err := ltm.ShowLTMPools(f5url)
+	res, poollist, err := ltm.ShowLTMPools(f5url)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
@@ -110,7 +110,7 @@ func LTMPoolList(c *gin.Context) {
 		u.Path = path.Join(c.Request.Host, c.Request.RequestURI, "/", v.Name, common.MembersURI)
 		poollist.Items[i].MembersReference = u.String()
 	}
-	c.JSON(http.StatusOK, gin.H{"message": poollist})
+	respondWithStatus(res.Status, "", poollist, "", "", c)
 }
 
 // GTMPoolList show global traffic manager pools
@@ -120,7 +120,7 @@ func GTMPoolList(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
 	}
-	gtmpoollist, err := gtm.ShowGTMPools(f5url)
+	res, gtmpoollist, err := gtm.ShowGTMPools(f5url)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
@@ -130,7 +130,7 @@ func GTMPoolList(c *gin.Context) {
 		u.Path = path.Join(c.Request.Host, c.Request.RequestURI, "/", v.Name, common.MembersURI)
 		gtmpoollist.Items[i].MembersReference = u.String()
 	}
-	c.JSON(http.StatusOK, gin.H{"message": gtmpoollist})
+	respondWithStatus(res.Status, "", gtmpoollist, "", "", c)
 }
 
 // GTMIRuleList show global traffic manager iRules
@@ -140,11 +140,11 @@ func GTMIRuleList(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
 	}
-	gtmirulelist, err := gtm.ShowGTMIRules(f5url)
+	res, gtmirulelist, err := gtm.ShowGTMIRules(f5url)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	c.JSON(http.StatusOK, gin.H{"message": gtmirulelist})
+	respondWithStatus(res.Status, "", gtmirulelist, "", "", c)
 }
 
 // GTMIRuleNameList show specfic global traffic manager iRule
@@ -155,11 +155,11 @@ func GTMIRuleNameList(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
 	}
 	irule := c.Params.ByName("irule")
-	gtmirulenamelist, err := gtm.ShowGTMIRule(f5url, irule)
+	res, gtmirulenamelist, err := gtm.ShowGTMIRule(f5url, irule)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	c.JSON(http.StatusOK, gin.H{"message": gtmirulenamelist})
+	respondWithStatus(res.Status, "", gtmirulenamelist, "", "", c)
 }
 
 // LTMPoolNameList show specific local traffic manager pool
@@ -168,16 +168,16 @@ func LTMPoolNameList(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	poolname := c.Params.ByName("poolname")
-	poolnamelist, err := ltm.ShowLTMPool(f5url, poolname)
+	pool := c.Params.ByName("pool")
+	res, poollist, err := ltm.ShowLTMPool(f5url, pool)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
 	u := new(url.URL)
 	u.Scheme = common.Protocol
 	u.Path = path.Join(c.Request.Host, c.Request.RequestURI, common.MembersURI)
-	poolnamelist.MembersReference = u.String()
-	c.JSON(http.StatusOK, gin.H{"message": poolnamelist})
+	poollist.MembersReference = u.String()
+	respondWithStatus(res.Status, "", poollist, "", "", c)
 }
 
 // LTMIRuleNameList show specific iRule
@@ -187,11 +187,11 @@ func LTMIRuleNameList(c *gin.Context) {
 		glog.Errorf("%s", err)
 	}
 	irule := c.Params.ByName("irule")
-	irulenamelist, err := ltm.ShowLTMIRule(f5url, irule)
+	res, irulenamelist, err := ltm.ShowLTMIRule(f5url, irule)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	c.JSON(http.StatusOK, gin.H{"message": irulenamelist})
+	respondWithStatus(res.Status, "", irulenamelist, "", "", c)
 }
 
 // LTMIRuleList show all iRules
@@ -200,11 +200,11 @@ func LTMIRuleList(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	irulelist, err := ltm.ShowLTMIRules(f5url)
+	res, irulelist, err := ltm.ShowLTMIRules(f5url)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	c.JSON(http.StatusOK, gin.H{"message": irulelist})
+	respondWithStatus(res.Status, "", irulelist, "", "", c)
 }
 
 // GTMPoolNameList show specific global traffic manager pool
@@ -215,15 +215,15 @@ func GTMPoolNameList(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
 	}
-	gtmpoolnamelist, err := gtm.ShowGTMPool(f5url, pool)
+	res, gtmpoollist, err := gtm.ShowGTMPool(f5url, pool)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
 	u := new(url.URL)
 	u.Scheme = common.Protocol
 	u.Path = path.Join(c.Request.Host, c.Request.RequestURI, common.MembersURI)
-	gtmpoolnamelist.MembersReference = u.String()
-	c.JSON(http.StatusOK, gin.H{"message": gtmpoolnamelist})
+	gtmpoollist.MembersReference = u.String()
+	respondWithStatus(res.Status, "", gtmpoollist, "", "", c)
 }
 
 // GTMPoolMemberList show global traffic manager members in a specific pool
@@ -234,11 +234,11 @@ func GTMPoolMemberList(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": err.Error()})
 	}
-	poolmemberlist, err := gtm.ShowGTMPoolMembers(f5url, pool)
+	res, poolmemberlist, err := gtm.ShowGTMPoolMembers(f5url, pool)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	c.JSON(http.StatusOK, gin.H{"message": poolmemberlist})
+	respondWithStatus(res.Status, "", poolmemberlist, "", "", c)
 }
 
 // LTMPoolMemberList show local traffic manager members in a specific pool
@@ -247,12 +247,12 @@ func LTMPoolMemberList(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	poolname := c.Params.ByName("poolname")
-	poolmemberlist, err := ltm.ShowLTMPoolMember(f5url, poolname)
+	pool := c.Params.ByName("pool")
+	res, poolmemberlist, err := ltm.ShowLTMPoolMember(f5url, pool)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	c.JSON(http.StatusOK, gin.H{"message": poolmemberlist})
+	respondWithStatus(res.Status, "", poolmemberlist, "", "", c)
 }
 
 // LTMDeviceList show local traffic manager devices
@@ -261,11 +261,11 @@ func LTMDeviceList(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	devicelist, err := ltm.ShowLTMDevice(f5url)
+	res, devicelist, err := ltm.ShowLTMDevice(f5url)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	c.JSON(http.StatusOK, gin.H{"message": devicelist})
+	respondWithStatus(res.Status, "", devicelist, "", "", c)
 }
 
 // LTMDeviceNameList show local traffic manager specific device
@@ -275,11 +275,11 @@ func LTMDeviceNameList(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	devicenamelist, err := ltm.ShowLTMDeviceName(device, f5url, common.Conf.Ltmdevicenames)
+	res, devicenamelist, err := ltm.ShowLTMDeviceName(device, f5url, common.Conf.Ltmdevicenames)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	c.JSON(http.StatusOK, gin.H{"message": devicenamelist})
+	respondWithStatus(res.Status, "", devicenamelist, "", "", c)
 }
 
 // LTMVirtualServerList show local traffic manager virtual servers
@@ -289,7 +289,7 @@ func LTMVirtualServerList(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	virtualserverlist, err := ltm.ShowLTMVirtualServer(f5url)
+	res, virtualserverlist, err := ltm.ShowLTMVirtualServer(f5url)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
@@ -309,7 +309,7 @@ func LTMVirtualServerList(c *gin.Context) {
 			virtualserverlist.Items[i].PoolsReference = u.String()
 		}
 	}
-	c.JSON(http.StatusOK, gin.H{"message": virtualserverlist})
+	respondWithStatus(res.Status, "", virtualserverlist, "", "", c)
 }
 
 // LTMVirtualServerNameList show local traffic manager specific virtual server
@@ -320,7 +320,7 @@ func LTMVirtualServerNameList(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	virtualservernamelist, err := ltm.ShowLTMVirtualServerName(f5url, vservername)
+	res, virtualservernamelist, err := ltm.ShowLTMVirtualServerName(f5url, vservername)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
@@ -338,7 +338,7 @@ func LTMVirtualServerNameList(c *gin.Context) {
 		u.Path = path.Join(c.Request.Host, "/api/ltms/", lbpair, common.PoolsURI, util.ReplaceCommon(virtualservernamelist.Pool))
 		virtualservernamelist.PoolsReference = u.String()
 	}
-	c.JSON(http.StatusOK, gin.H{"message": virtualservernamelist})
+	respondWithStatus(res.Status, "", virtualservernamelist, "", "", c)
 }
 
 // LTMProfileList show local traffic manager profiles of a specific virtual server
@@ -348,11 +348,11 @@ func LTMProfileList(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	profilelist, err := ltm.ShowLTMProfile(f5url, vservername)
+	res, profilelist, err := ltm.ShowLTMProfile(f5url, vservername)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	c.JSON(http.StatusOK, gin.H{"message": profilelist})
+	respondWithStatus(res.Status, "", profilelist, "", "", c)
 }
 
 // LTMFWRuleList show local traffic manager iRules of a specific virtual server
@@ -362,8 +362,11 @@ func LTMFWRuleList(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	rulelist := ltm.ShowLTMFWRules(f5url, vservername)
-	c.JSON(http.StatusOK, gin.H{"message": rulelist})
+	res, rulelist, err := ltm.ShowLTMFWRules(f5url, vservername)
+	if err != nil {
+		glog.Errorf("%s", err)
+	}
+	respondWithStatus(res.Status, "", rulelist, "", "", c)
 }
 
 // LTMDataGroupList show local traffic manager internal data groups
@@ -373,11 +376,11 @@ func LTMDataGroupList(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	datagrouplist, err := ltm.ShowLTMDataGroup(f5url, direction)
+	res, datagrouplist, err := ltm.ShowLTMDataGroup(f5url, direction)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	c.JSON(http.StatusOK, gin.H{"message": datagrouplist})
+	respondWithStatus(res.Status, "", datagrouplist, "", "", c)
 }
 
 // LTMDataGroupNameList show local traffic manager internal specific data group
@@ -388,11 +391,11 @@ func LTMDataGroupNameList(c *gin.Context) {
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	datagroupnamelist, err := ltm.ShowLTMDataGroupName(f5url, direction, datagroupname)
+	res, datagroupnamelist, err := ltm.ShowLTMDataGroupName(f5url, direction, datagroupname)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	c.JSON(http.StatusOK, gin.H{"message": datagroupnamelist})
+	respondWithStatus(res.Status, "", datagroupnamelist, "", "", c)
 }
 
 // LTMVirtualServerPost create virtual server
@@ -547,7 +550,7 @@ func GTMWideipPost(c *gin.Context) {
 func LTMPoolMemberPost(c *gin.Context) {
 	var poolmembercreate ltm.CreatePoolMember
 
-	poolname := c.Params.ByName("poolname")
+	pool := c.Params.ByName("pool")
 	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	if err != nil {
 		glog.Errorf("%s", err)
@@ -557,7 +560,7 @@ func LTMPoolMemberPost(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Create pool member",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 	} else {
-		res, err := ltm.PostLTMPoolMember(f5url, poolname, &poolmembercreate)
+		res, err := ltm.PostLTMPoolMember(f5url, pool, &poolmembercreate)
 		if err != nil {
 			glog.Errorf("%s", err)
 		}
@@ -597,23 +600,17 @@ func LTMPoolPut(c *gin.Context) {
 
 // LTMPoolDelete delete a pool on a local traffic manager
 func LTMPoolDelete(c *gin.Context) {
-	var pooldelete ltm.RemovePool
 	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	if err := c.BindJSON(&pooldelete); err != nil {
-		respondWithStatus(400, "Invalid JSON data", "Delete pool",
-			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmpooldocumentationuri"], c)
-	} else {
-		res, err := ltm.DeleteLTMPool(f5url, pooldelete.Name)
-		if err != nil {
-			glog.Errorf("%s", err)
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		respondWithStatus(res.Status, "Pool deleted", pooldelete.Name,
-			returnerror.ErrorMessage(), common.Conf.Documentation["ltmpooldocumentationuri"], c)
+	res, err := ltm.DeleteLTMPool(f5url, c.Params.ByName("pool"))
+	if err != nil {
+		glog.Errorf("%s", err)
 	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	respondWithStatus(res.Status, "Pool deleted", c.Params.ByName("pool"),
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmpooldocumentationuri"], c)
 }
 
 // GTMPoolDelete delete a pool on a global traffic manager
@@ -707,7 +704,7 @@ func GTMPoolStatusPut(c *gin.Context) {
 // LTMPoolMemberPut modify pool members on a local traffic manager (enabled, disabled, force-offline)
 func LTMPoolMemberPut(c *gin.Context) {
 	var poolmembermodify ltm.ModifyPoolMember
-	poolname := c.Params.ByName("poolname")
+	pool := c.Params.ByName("pool")
 	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	if err != nil {
 		glog.Errorf("%s", err)
@@ -716,7 +713,7 @@ func LTMPoolMemberPut(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Modify pool member",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 	} else {
-		res, err := ltm.PutLTMPoolMember(f5url, poolname, poolmembermodify.Name, poolmembermodify.Status)
+		res, err := ltm.PutLTMPoolMember(f5url, pool, poolmembermodify.Name, poolmembermodify.Status)
 		if err != nil {
 			glog.Errorf("%s", err)
 		}
@@ -732,7 +729,7 @@ func LTMPoolMemberPut(c *gin.Context) {
 // LTMPoolMemberDelete delete specific pool members on a local traffic manager
 func LTMPoolMemberDelete(c *gin.Context) {
 	var poolmemberdelete ltm.RemovePoolMember
-	poolname := c.Params.ByName("poolname")
+	pool := c.Params.ByName("pool")
 	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	if err != nil {
 		glog.Errorf("%s", err)
@@ -741,7 +738,7 @@ func LTMPoolMemberDelete(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Delete pool member",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 	} else {
-		res, err := ltm.DeleteLTMPoolMember(f5url, poolname, poolmemberdelete.Name)
+		res, err := ltm.DeleteLTMPoolMember(f5url, pool, poolmemberdelete.Name)
 		if err != nil {
 			glog.Errorf("%s", err)
 		}
@@ -863,11 +860,11 @@ func LTMAddressList(c *gin.Context) {
 		glog.Errorf("%s", err)
 	}
 	f5url = strings.Replace(f5url, common.LtmURI, "", -1)
-	addresslist, err := ltm.ShowLTMAddressList(f5url, common.BlackList)
+	res, addresslist, err := ltm.ShowLTMAddressList(f5url, common.BlackList)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	c.JSON(http.StatusOK, gin.H{"message": addresslist})
+	respondWithStatus(res.Status, "", addresslist, "", "", c)
 }
 
 // LTMBlockIPPatch add ips which will be blocked
@@ -891,7 +888,7 @@ func LTMBlockIPPatch(c *gin.Context) {
 		if res.Status == 200 {
 			res.Status = 201
 		}
-		respondWithStatus(res.Status, "IP(s) blocked successfully", fmt.Sprintf("%+v", blockips),
+		respondWithStatus(res.Status, "IP(s) blocked successfully", blockips,
 			returnerror.ErrorMessage(), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 	}
 }
@@ -917,7 +914,7 @@ func LTMWhiteIPPatch(c *gin.Context) {
 		if res.Status == 200 {
 			res.Status = 201
 		}
-		respondWithStatus(res.Status, "IP(s) whitelisted successfully", fmt.Sprintf("%+v", whiteips),
+		respondWithStatus(res.Status, "IP(s) whitelisted successfully", whiteips,
 			returnerror.ErrorMessage(), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 	}
 }
@@ -1007,25 +1004,33 @@ func CORSMiddleware() gin.HandlerFunc {
 }
 
 // respondWithStatus return JSON response
-func respondWithStatus(code int, message, name, e, documentation string, c *gin.Context) {
+func respondWithStatus(code int, message, name interface{}, e, documentation string, c *gin.Context) {
 	switch code {
 	case 200:
 		{
-			c.Set("message", fmt.Sprintf("%s %s", message, name))
-			c.JSON(code, gin.H{"message": fmt.Sprintf("%s %s", message, name)})
+			if message != "" {
+				c.Set("message", fmt.Sprintf("%s %+v", message, name))
+				c.JSON(code, gin.H{"message": fmt.Sprintf("%s %+v", message, name)})
+			} else {
+				c.Set("message", message)
+				c.JSON(code, gin.H{"message": name})
+			}
 		}
 	case 201:
-		c.Set("message", fmt.Sprintf("%s %s", message, name))
+		c.Set("message", fmt.Sprintf("%s %+v", message, name))
 		u := new(url.URL)
 		u.Scheme = common.Protocol
-		u.Path = path.Join(c.Request.Host, c.Request.RequestURI, "/", name)
+		u.Path = path.Join(c.Request.Host, c.Request.RequestURI, "/", fmt.Sprintf("%#v", name))
 		c.Header("location", u.String())
-		c.JSON(code, gin.H{"message": fmt.Sprintf("%s %s", message, name)})
+		c.JSON(code, gin.H{"message": fmt.Sprintf("%s %+v", message, name)})
 	case 400:
 		c.Set("message", e)
 		c.Header("Content-Type", "application/problem+json")
 		c.JSON(code, Response{Type: documentation, Status: code,
 			Title: "Invalid JSON data", Detail: e})
+	case 404:
+		c.Set("message", e)
+		c.JSON(code, gin.H{"message": "Object not found"})
 	case 409:
 		c.Set("message", e)
 		c.Header("Content-Type", "application/problem+json")
