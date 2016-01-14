@@ -60,21 +60,21 @@ type Device struct {
 
 // ShowLTMDevice returns information
 // of loadbalancer devices
-func ShowLTMDevice(inputURL string) (*Devices, error) {
+func ShowLTMDevice(inputURL string) (*backend.Response, *Devices, error) {
 	// Declaration LTM Device
 	ltmdevice := new(Devices)
 	deviceURL := util.ReplaceLTMUritoDeviceURI(inputURL)
 	fmt.Println(deviceURL)
-	_, err := backend.Request(common.GET, deviceURL, &ltmdevice)
+	res, err := backend.Request(common.GET, deviceURL, &ltmdevice)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return ltmdevice, nil
+	return res, ltmdevice, nil
 }
 
 // ShowLTMDeviceName returns information
 // of a specific loadbalancer device
-func ShowLTMDeviceName(host, inputURL string, ltmDeviceNames map[string]string) (*Device, error) {
+func ShowLTMDeviceName(host, inputURL string, ltmDeviceNames map[string]string) (*backend.Response, *Device, error) {
 	// Declaration LTM Device Name
 	value := ltmDeviceNames[host]
 	ltmdevicename := new(Device)
@@ -82,11 +82,11 @@ func ShowLTMDeviceName(host, inputURL string, ltmDeviceNames map[string]string) 
 	u.Scheme = common.Protocol
 	u.Path = path.Join(host, common.DeviceURI, value)
 	devicenameURL := u.String()
-	_, err := backend.Request(common.GET, devicenameURL, &ltmdevicename)
+	res, err := backend.Request(common.GET, devicenameURL, &ltmdevicename)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return ltmdevicename, nil
+	return res, ltmdevicename, nil
 }
 
 //Loadbalancer checks which loadbalancer device is active
@@ -97,7 +97,7 @@ func Loadbalancer(lbpair string, ltmDeviceNames map[string]string) (string, erro
 	u := new(url.URL)
 	u.Scheme = common.Protocol
 	u.Path = path.Join(lb02, common.DeviceURI)
-	obj, err := ShowLTMDeviceName(lb01, u.Path, ltmDeviceNames)
+	_, obj, err := ShowLTMDeviceName(lb01, u.Path, ltmDeviceNames)
 	if err != nil {
 		return "", err
 	}

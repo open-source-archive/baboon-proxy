@@ -56,35 +56,35 @@ type RemoveWip struct {
 }
 
 // ShowGTMWips lists all wide ips on a trafficmanager
-func ShowGTMWips(host string) (*Wips, error) {
+func ShowGTMWips(host string) (*backend.Response, *Wips, error) {
 	gtmwips := new(Wips)
 	u, err := url.Parse(host)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmwipsuri)
-	_, err = backend.Request(common.GET, u.String(), &gtmwips)
+	res, err := backend.Request(common.GET, u.String(), &gtmwips)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return gtmwips, nil
+	return res, gtmwips, nil
 }
 
 // ShowGTMWip list a specific wide ip on a trafficmanager
-func ShowGTMWip(host, wideip string) (*Wip, error) {
+func ShowGTMWip(host, wideip string) (*backend.Response, *Wip, error) {
 	gtmwip := new(Wip)
 	u, err := url.Parse(host)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmwipsuri, "/", wideip)
-	_, err = backend.Request(common.GET, u.String(), &gtmwip)
+	res, err := backend.Request(common.GET, u.String(), &gtmwip)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return gtmwip, nil
+	return res, gtmwip, nil
 }
 
 // PostGTMWip creates a new wide ip on a trafficmanager
