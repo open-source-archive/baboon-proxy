@@ -76,11 +76,6 @@ type CreatePoolMember struct {
 	Fullpath     string `json:"fullPath,omitempty"`
 }
 
-// RemovePool struct to delete a pool
-type RemovePool struct {
-	Name string `json:"name" binding:"required"`
-}
-
 // RemovePoolMember struct to delete a member in a pool
 type RemovePoolMember struct {
 	Name         string `json:"name" binding:"required"`

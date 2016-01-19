@@ -50,11 +50,6 @@ type CreateWip struct {
 	Poollbmode string `json:"poolLbMode"`
 }
 
-// RemoveWip struct to delete a wide ip
-type RemoveWip struct {
-	Name string `json:"name" binding:"required"`
-}
-
 // ShowGTMWips lists all wide ips on a trafficmanager
 func ShowGTMWips(host string) (*backend.Response, *Wips, error) {
 	gtmwips := new(Wips)

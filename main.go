@@ -71,8 +71,8 @@ func main() {
 			privateGTM.POST("/pools", client.GTMPoolPost)
 			privateGTM.POST("/pools/:pool/members", client.GTMPoolMemberPost)
 			privateGTM.POST("/wideips", client.GTMWideipPost)
-			privateGTM.DELETE("/pools", client.GTMPoolDelete)
-			privateGTM.DELETE("/wideips", client.GTMWipDelete)
+			privateGTM.DELETE("/pools/:pool", client.GTMPoolDelete)
+			privateGTM.DELETE("/wideips/:wideip", client.GTMWipDelete)
 			privateGTM.DELETE("/pools/:pool/members", client.GTMPoolMemberDelete)
 		}
 		emergencyGTM := app.Group("/api/gtms/:trafficmanager")
