@@ -7,6 +7,7 @@ import (
 
 	"github.com/zalando-techmonkeys/baboon-proxy/backend"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
+	"github.com/zalando-techmonkeys/baboon-proxy/errors"
 )
 
 /*
@@ -45,11 +46,11 @@ type FirewallRules struct {
 }
 
 // ShowLTMFWRules shows firewall profile
-func ShowLTMFWRules(host, vserver string) (*backend.Response, *FirewallRules, error) {
+func ShowLTMFWRules(host, vserver string) (*backend.Response, *FirewallRules, *errors.Error) {
 	fwrules := new(FirewallRules)
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, nil, err
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Path = path.Join(u.Path, fmt.Sprintf("virtual/~%s~%s/fw-rules", ltmPartition, vserver))
 	res, err := backend.Request(common.GET, u.String(), &fwrules)
@@ -60,11 +61,11 @@ func ShowLTMFWRules(host, vserver string) (*backend.Response, *FirewallRules, er
 }
 
 // ShowLTMIRules shows iRules
-func ShowLTMIRules(host string) (*backend.Response, *IRules, error) {
+func ShowLTMIRules(host string) (*backend.Response, *IRules, *errors.Error) {
 	iRs := new(IRules)
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, nil, err
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Path = path.Join(u.Path, "rule")
 	res, err := backend.Request(common.GET, u.String(), &iRs)
@@ -75,11 +76,11 @@ func ShowLTMIRules(host string) (*backend.Response, *IRules, error) {
 }
 
 // ShowLTMIRule shows a specific iRule
-func ShowLTMIRule(host, iRuleName string) (*backend.Response, *IRule, error) {
+func ShowLTMIRule(host, iRuleName string) (*backend.Response, *IRule, *errors.Error) {
 	iR := new(IRule)
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, nil, err
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Path = path.Join(u.Path, fmt.Sprintf("rule/~%s~%s", ltmPartition, iRuleName))
 	res, err := backend.Request(common.GET, u.String(), &iR)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/zalando-techmonkeys/baboon-proxy/backend"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
+	"github.com/zalando-techmonkeys/baboon-proxy/errors"
 	"net/url"
 	"path"
 )
@@ -27,12 +28,12 @@ type Profiles struct {
 }
 
 // ShowLTMProfile show profiles from a virtual server
-func ShowLTMProfile(host, vserver string) (*backend.Response, *Profiles, error) {
+func ShowLTMProfile(host, vserver string) (*backend.Response, *Profiles, *errors.Error) {
 	// Declaration LTM Profile
 	ltmprofile := new(Profiles)
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, nil, err
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Path = path.Join(u.Path, fmt.Sprintf("virtual/~%s~%s/profiles", ltmPartition, vserver))
 	res, err := backend.Request(common.GET, u.String(), &ltmprofile)

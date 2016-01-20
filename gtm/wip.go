@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/zalando-techmonkeys/baboon-proxy/backend"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
+	"github.com/zalando-techmonkeys/baboon-proxy/errors"
 	"net/url"
 	"path"
 )
@@ -51,11 +52,11 @@ type CreateWip struct {
 }
 
 // ShowGTMWips lists all wide ips on a trafficmanager
-func ShowGTMWips(host string) (*backend.Response, *Wips, error) {
+func ShowGTMWips(host string) (*backend.Response, *Wips, *errors.Error) {
 	gtmwips := new(Wips)
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, nil, err
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmwipsuri)
@@ -67,11 +68,11 @@ func ShowGTMWips(host string) (*backend.Response, *Wips, error) {
 }
 
 // ShowGTMWip list a specific wide ip on a trafficmanager
-func ShowGTMWip(host, wideip string) (*backend.Response, *Wip, error) {
+func ShowGTMWip(host, wideip string) (*backend.Response, *Wip, *errors.Error) {
 	gtmwip := new(Wip)
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, nil, err
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmwipsuri, "/", wideip)
@@ -83,10 +84,10 @@ func ShowGTMWip(host, wideip string) (*backend.Response, *Wip, error) {
 }
 
 // PostGTMWip creates a new wide ip on a trafficmanager
-func PostGTMWip(host string, json *CreateWip) (*backend.Response, error) {
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, err
+func PostGTMWip(host string, json *CreateWip) (*backend.Response, *errors.Error) {
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmwipsuri)
@@ -102,10 +103,10 @@ func PostGTMWip(host string, json *CreateWip) (*backend.Response, error) {
 }
 
 // DeleteGTMWip deletes a pool on a trafficmanager
-func DeleteGTMWip(host, wideip string) (*backend.Response, error) {
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, err
+func DeleteGTMWip(host, wideip string) (*backend.Response, *errors.Error) {
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmwipsuri)

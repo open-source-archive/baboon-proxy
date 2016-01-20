@@ -7,6 +7,7 @@ import (
 
 	"github.com/zalando-techmonkeys/baboon-proxy/backend"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
+	"github.com/zalando-techmonkeys/baboon-proxy/errors"
 )
 
 // IRules struct provides information
@@ -28,11 +29,11 @@ type IRule struct {
 }
 
 // ShowGTMIRules shows iRules
-func ShowGTMIRules(host string) (*backend.Response, *IRules, error) {
+func ShowGTMIRules(host string) (*backend.Response, *IRules, *errors.Error) {
 	iRs := new(IRules)
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, nil, err
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmirulesuri)
@@ -44,11 +45,11 @@ func ShowGTMIRules(host string) (*backend.Response, *IRules, error) {
 }
 
 // ShowGTMIRule shows a specific iRule
-func ShowGTMIRule(host, iRuleName string) (*backend.Response, *IRule, error) {
+func ShowGTMIRule(host, iRuleName string) (*backend.Response, *IRule, *errors.Error) {
 	iR := new(IRule)
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, nil, err
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmirulesuri, fmt.Sprintf("/%s", iRuleName))

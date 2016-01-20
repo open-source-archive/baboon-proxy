@@ -1,8 +1,8 @@
 package gtm
 
 import (
-	"fmt"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
+	"github.com/zalando-techmonkeys/baboon-proxy/errors"
 	"net"
 	"time"
 )
@@ -11,7 +11,7 @@ import (
 // or external (GTM)
 // Check if ITM/GTM is available
 // Required to create WIPs and Pools
-func Trafficmanager(cluster string) (string, error) {
+func Trafficmanager(cluster string) (string, *errors.Error) {
 	var (
 		dnsserver         string
 		seconds           = 2
@@ -31,7 +31,7 @@ func Trafficmanager(cluster string) (string, error) {
 		}
 	default:
 		{
-			return "", fmt.Errorf("Pattern %s not found, should be itm or gtm", cluster)
+			return "", &errors.ErrorCodeNotFoundPattern
 		}
 	}
 	timeOut := time.Duration(seconds) * time.Second

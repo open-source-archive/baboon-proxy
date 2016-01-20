@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/zalando-techmonkeys/baboon-proxy/backend"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
+	"github.com/zalando-techmonkeys/baboon-proxy/errors"
 	"github.com/zalando-techmonkeys/baboon-proxy/util"
 	"net/url"
 	"path"
@@ -60,7 +61,7 @@ type Device struct {
 
 // ShowLTMDevice returns information
 // of loadbalancer devices
-func ShowLTMDevice(inputURL string) (*backend.Response, *Devices, error) {
+func ShowLTMDevice(inputURL string) (*backend.Response, *Devices, *errors.Error) {
 	// Declaration LTM Device
 	ltmdevice := new(Devices)
 	deviceURL := util.ReplaceLTMUritoDeviceURI(inputURL)
@@ -74,7 +75,7 @@ func ShowLTMDevice(inputURL string) (*backend.Response, *Devices, error) {
 
 // ShowLTMDeviceName returns information
 // of a specific loadbalancer device
-func ShowLTMDeviceName(host, inputURL string, ltmDeviceNames map[string]string) (*backend.Response, *Device, error) {
+func ShowLTMDeviceName(host, inputURL string, ltmDeviceNames map[string]string) (*backend.Response, *Device, *errors.Error) {
 	// Declaration LTM Device Name
 	value := ltmDeviceNames[host]
 	ltmdevicename := new(Device)
@@ -91,7 +92,7 @@ func ShowLTMDeviceName(host, inputURL string, ltmDeviceNames map[string]string) 
 
 //Loadbalancer checks which loadbalancer device is active
 //TODO no error handling, function interacting with backend, possible bugs here
-func Loadbalancer(lbpair string, ltmDeviceNames map[string]string) (string, error) {
+func Loadbalancer(lbpair string, ltmDeviceNames map[string]string) (string, *errors.Error) {
 	lb01 := lbpair + "01"
 	lb02 := lbpair + "02"
 	u := new(url.URL)

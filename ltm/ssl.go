@@ -3,6 +3,7 @@ package ltm
 import (
 	"github.com/zalando-techmonkeys/baboon-proxy/backend"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
+	"github.com/zalando-techmonkeys/baboon-proxy/errors"
 	"net/url"
 	"path"
 )
@@ -31,10 +32,10 @@ type CreateSSLProfile struct {
 }
 
 // PostLTMSSLKey create a new ssl key
-func PostLTMSSLKey(host string, json interface{}) (*backend.Response, error) {
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, err
+func PostLTMSSLKey(host string, json interface{}) (*backend.Response, *errors.Error) {
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Path = path.Join(u.Path, "key")
 	r, err := backend.Request(common.POST, u.String(), &json)
@@ -45,10 +46,10 @@ func PostLTMSSLKey(host string, json interface{}) (*backend.Response, error) {
 }
 
 // PostLTMSSLCert create a new ssl certificate
-func PostLTMSSLCert(host string, json interface{}) (*backend.Response, error) {
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, err
+func PostLTMSSLCert(host string, json interface{}) (*backend.Response, *errors.Error) {
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Path = path.Join(u.Path, "cert")
 	r, err := backend.Request(common.POST, u.String(), &json)
