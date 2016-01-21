@@ -28,24 +28,18 @@ var returnerror ltm.ErrorLTM
 
 // GTMWipDelete delete wide ip
 func GTMWipDelete(c *gin.Context) {
-	var wipdelete gtm.RemoveWip
-
+	wideip := c.Params.ByName("wideip")
 	f5url, err := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	if err := c.BindJSON(&wipdelete); err != nil {
-		respondWithStatus(400, "Invalid JSON data", "Delete wideip",
-			fmt.Sprintf("%s", err), common.Conf.Documentation["gtmwideipdocumentationuri"], c)
-	} else {
-		res, err := gtm.DeleteGTMWip(f5url, wipdelete.Name)
-		if err != nil {
-			glog.Errorf("%s", err)
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		respondWithStatus(res.Status, "Wide IP deleted", wipdelete.Name,
-			returnerror.ErrorMessage(), common.Conf.Documentation["gtmwideipdocumentationuri"], c)
+	res, err := gtm.DeleteGTMWip(f5url, wideip)
+	if err != nil {
+		glog.Errorf("%s", err)
 	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	respondWithStatus(res.Status, "WideIP deleted", wideip,
+		returnerror.ErrorMessage(), common.Conf.Documentation["gtmwideipdocumentationuri"], c)
 }
 
 // GTMWipList show all wide ips
@@ -600,38 +594,34 @@ func LTMPoolPut(c *gin.Context) {
 
 // LTMPoolDelete delete a pool on a local traffic manager
 func LTMPoolDelete(c *gin.Context) {
+	pool := c.Params.ByName("pool")
 	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	res, err := ltm.DeleteLTMPool(f5url, c.Params.ByName("pool"))
+	res, err := ltm.DeleteLTMPool(f5url, pool)
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
-	respondWithStatus(res.Status, "Pool deleted", c.Params.ByName("pool"),
+	respondWithStatus(res.Status, "Pool deleted", pool,
 		returnerror.ErrorMessage(), common.Conf.Documentation["ltmpooldocumentationuri"], c)
 }
 
 // GTMPoolDelete delete a pool on a global traffic manager
 func GTMPoolDelete(c *gin.Context) {
-	var pooldelete gtm.RemovePool
+	pool := c.Params.ByName("pool")
 	f5url, err := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
 	if err != nil {
 		glog.Errorf("%s", err)
 	}
-	if err := c.BindJSON(&pooldelete); err != nil {
-		respondWithStatus(400, "Invalid JSON data", "Delete pool",
-			fmt.Sprintf("%s", err), common.Conf.Documentation["gtmpooldocumentationuri"], c)
-	} else {
-		res, err := gtm.DeleteGTMPool(f5url, pooldelete.Name)
-		if err != nil {
-			glog.Errorf("%s", err)
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		respondWithStatus(res.Status, "Pool deleted", pooldelete.Name,
-			returnerror.ErrorMessage(), common.Conf.Documentation["gtmpooldocumentationuri"], c)
+	res, err := gtm.DeleteGTMPool(f5url, pool)
+	if err != nil {
+		glog.Errorf("%s", err)
 	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	respondWithStatus(res.Status, "Pool deleted", pool,
+		returnerror.ErrorMessage(), common.Conf.Documentation["gtmpooldocumentationuri"], c)
 }
 
 // GTMPoolMemberDelete delete specific pool members on a global traffic manager
