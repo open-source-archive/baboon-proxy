@@ -4,6 +4,7 @@ import (
 	"github.com/golang/glog"
 	"github.com/zalando-techmonkeys/baboon-proxy/backend"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
+	"github.com/zalando-techmonkeys/baboon-proxy/errors"
 	"github.com/zalando-techmonkeys/baboon-proxy/util"
 	"net/url"
 	"path"
@@ -38,11 +39,11 @@ type AddressList struct {
 }
 
 // ShowLTMAddressList returns a specific address list on LB
-func ShowLTMAddressList(host, address string) (*backend.Response, *AddressList, error) {
+func ShowLTMAddressList(host, address string) (*backend.Response, *AddressList, *errors.Error) {
 	addresslist := new(AddressList)
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, nil, err
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Path = path.Join(u.Path, common.AddressList, address)
 	res, err := backend.Request(common.GET, u.String(), addresslist)
@@ -53,11 +54,11 @@ func ShowLTMAddressList(host, address string) (*backend.Response, *AddressList, 
 }
 
 // ShowLTMAddressList returns a specific address list on LB
-func ShowLTMAddressListName(host, address string) (*backend.Response, *AddressList, error) {
+func ShowLTMAddressListName(host, address string) (*backend.Response, *AddressList, *errors.Error) {
 	addresslist := new(AddressList)
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, nil, err
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Path = path.Join(u.Path, common.AddressList, address)
 	res, err := backend.Request(common.GET, u.String(), addresslist)
@@ -70,7 +71,7 @@ func ShowLTMAddressListName(host, address string) (*backend.Response, *AddressLi
 // PatchLTMBlockAddresses to block IPs
 // Due not overwriting address list
 // its necessary to get all entries first
-func PatchLTMBlockAddresses(host string, blockIP *CreateAddresses) (*backend.Response, error) {
+func PatchLTMBlockAddresses(host string, blockIP *CreateAddresses) (*backend.Response, *errors.Error) {
 
 	_, whiteIP, err := ShowLTMAddressListName(host, common.WhiteList)
 	if err != nil {
@@ -126,7 +127,10 @@ func PatchLTMBlockAddresses(host string, blockIP *CreateAddresses) (*backend.Res
 		blockIP.Addresses = append(blockIP.Addresses, blackIP.Addresses[i])
 	}
 
-	u, err := url.Parse(host)
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, &errors.ErrorCodeBadRequestParse
+	}
 	u.Path = path.Join(u.Path, common.AddressList, common.BlackList)
 
 	r, err := backend.Request(common.PATCH, u.String(), &blockIP)
@@ -137,10 +141,10 @@ func PatchLTMBlockAddresses(host string, blockIP *CreateAddresses) (*backend.Res
 }
 
 // DeleteLTMBlockAddresses remove IPs from blacklist
-func DeleteLTMBlockAddresses(host string, deleteIP *DeleteAddresses) (*backend.Response, error) {
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, err
+func DeleteLTMBlockAddresses(host string, deleteIP *DeleteAddresses) (*backend.Response, *errors.Error) {
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Path = path.Join(u.Path, common.AddressList, common.BlackList)
 
@@ -180,7 +184,7 @@ func DeleteLTMBlockAddresses(host string, deleteIP *DeleteAddresses) (*backend.R
 // PatchLTMWhiteAddresses to whitelist ips
 // Due not overwriting address list
 // its necessary to get all entries first
-func PatchLTMWhiteAddresses(host string, whiteIP *CreateAddresses) (*backend.Response, error) {
+func PatchLTMWhiteAddresses(host string, whiteIP *CreateAddresses) (*backend.Response, *errors.Error) {
 
 	_, white, err := ShowLTMAddressListName(host, common.WhiteList)
 	if err != nil {
@@ -216,9 +220,9 @@ func PatchLTMWhiteAddresses(host string, whiteIP *CreateAddresses) (*backend.Res
 		whiteIP.Addresses = append(whiteIP.Addresses, white.Addresses[i])
 	}
 
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, err
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Path = path.Join(u.Path, common.AddressList, common.WhiteList)
 

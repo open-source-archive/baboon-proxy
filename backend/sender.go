@@ -5,6 +5,8 @@ import (
 	"github.com/golang/glog"
 	"github.com/jmcvetta/napping"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
+	"github.com/zalando-techmonkeys/baboon-proxy/errors"
+	"net/http"
 )
 
 //Response represent a response from the LB
@@ -19,7 +21,7 @@ func init() {
 }
 
 //Request represent a request to LB
-func Request(method int, u string, body interface{}) (*Response, error) {
+func Request(method int, u string, body interface{}) (*Response, *errors.Error) {
 	var (
 		err error
 		r   *napping.Response
@@ -28,7 +30,7 @@ func Request(method int, u string, body interface{}) (*Response, error) {
 	if method != common.GET {
 		data, err := json.Marshal(body)
 		if err != nil {
-			return nil, err
+			return nil, &errors.ErrorCodeBadRequestMarshal
 		}
 		glog.Infof("Contacting host: %s, JSON data %s", u, string(data))
 	}
@@ -54,5 +56,8 @@ func Request(method int, u string, body interface{}) (*Response, error) {
 			r, err = sess.Delete(u, nil, nil, nil)
 		}
 	}
-	return &Response{r.Status(), r.RawText()}, err
+	if err != nil {
+		return nil, &errors.Error{Status: http.StatusBadRequest, Message: err.Error()}
+	}
+	return &Response{r.Status(), r.RawText()}, nil
 }

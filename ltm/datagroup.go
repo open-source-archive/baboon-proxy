@@ -3,6 +3,7 @@ package ltm
 import (
 	"github.com/zalando-techmonkeys/baboon-proxy/backend"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
+	"github.com/zalando-techmonkeys/baboon-proxy/errors"
 	"net/url"
 	"path"
 )
@@ -59,12 +60,12 @@ type RemoveDataGroup struct {
 }
 
 // ShowLTMDataGroup lists all datagroups on a loadbalancer
-func ShowLTMDataGroup(host, source string) (*backend.Response, *DataGroups, error) {
+func ShowLTMDataGroup(host, source string) (*backend.Response, *DataGroups, *errors.Error) {
 	// Declaration LTM DataGroup
 	ltmdatagroup := new(DataGroups)
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, nil, err
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Path = path.Join(u.Path, common.Dg, source)
 	res, err := backend.Request(common.GET, u.String(), ltmdatagroup)
@@ -75,12 +76,12 @@ func ShowLTMDataGroup(host, source string) (*backend.Response, *DataGroups, erro
 }
 
 // ShowLTMDataGroupName lists a specific datagroup on a loadbalancer
-func ShowLTMDataGroupName(host, direction, datagroupname string) (*backend.Response, *DataGroup, error) {
+func ShowLTMDataGroupName(host, direction, datagroupname string) (*backend.Response, *DataGroup, *errors.Error) {
 	// Declaration LTM DataGroup by Name
 	ltmdatagroupname := new(DataGroup)
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, nil, err
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Path = path.Join(u.Path, common.Dg, direction, "/", datagroupname)
 	res, err := backend.Request(common.GET, u.String(), ltmdatagroupname)
@@ -91,10 +92,10 @@ func ShowLTMDataGroupName(host, direction, datagroupname string) (*backend.Respo
 }
 
 // PostLTMDataGroup creates a new datagroup
-func PostLTMDataGroup(host, direction string, json *CreateDataGroup) (*backend.Response, error) {
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, err
+func PostLTMDataGroup(host, direction string, json *CreateDataGroup) (*backend.Response, *errors.Error) {
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Path = path.Join(u.Path, common.Dg, direction)
 	r, err := backend.Request(common.POST, u.String(), &json)
@@ -105,10 +106,10 @@ func PostLTMDataGroup(host, direction string, json *CreateDataGroup) (*backend.R
 }
 
 // PutLTMDataGroupItem deletes all records in a datagroup and add new records
-func PutLTMDataGroupItem(host, direction, datagroup string, json *CreateDataGroupItem) (*backend.Response, error) {
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, err
+func PutLTMDataGroupItem(host, direction, datagroup string, json *CreateDataGroupItem) (*backend.Response, *errors.Error) {
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Path = path.Join(u.Path, common.Dg, direction, "/", datagroup)
 
@@ -122,10 +123,10 @@ func PutLTMDataGroupItem(host, direction, datagroup string, json *CreateDataGrou
 // PatchLTMDataGroupItem keeps all records in a datagroup and add new records
 // F5 API use PATCH and PUT in the same way. Overwriting all records, which is bad if you want to add items
 // in existing list. It gets all records first an append the new records from client.
-func PatchLTMDataGroupItem(host, direction, datagroup string, json *CreateDataGroupItem) (*backend.Response, error) {
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, err
+func PatchLTMDataGroupItem(host, direction, datagroup string, json *CreateDataGroupItem) (*backend.Response, *errors.Error) {
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Path = path.Join(u.Path, common.Dg, direction, "/", datagroup)
 
@@ -144,10 +145,10 @@ func PatchLTMDataGroupItem(host, direction, datagroup string, json *CreateDataGr
 }
 
 // DeleteLTMDataGroup deletes a specific datagroup
-func DeleteLTMDataGroup(host, direction, datagroupname string) (*backend.Response, error) {
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, err
+func DeleteLTMDataGroup(host, direction, datagroupname string) (*backend.Response, *errors.Error) {
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Path = path.Join(u.Path, common.Dg, direction, "/", datagroupname)
 	r, err := backend.Request(common.DELETE, u.String(), nil)

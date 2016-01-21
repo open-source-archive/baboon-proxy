@@ -7,6 +7,7 @@ import (
 
 	"github.com/zalando-techmonkeys/baboon-proxy/backend"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
+	"github.com/zalando-techmonkeys/baboon-proxy/errors"
 )
 
 var (
@@ -148,11 +149,11 @@ type PoolMember struct {
 }
 
 // ShowGTMPools shows all declared pools on gtm
-func ShowGTMPools(host string) (*backend.Response, *Pools, error) {
+func ShowGTMPools(host string) (*backend.Response, *Pools, *errors.Error) {
 	gtmpools := new(Pools)
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, nil, err
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri)
@@ -164,12 +165,12 @@ func ShowGTMPools(host string) (*backend.Response, *Pools, error) {
 }
 
 // ShowGTMPool shows specific declared pool on gtm
-func ShowGTMPool(host, pool string) (*backend.Response, *Pool, error) {
+func ShowGTMPool(host, pool string) (*backend.Response, *Pool, *errors.Error) {
 	// Declaration GTM Pool
 	gtmpool := new(Pool)
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, nil, err
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri, fmt.Sprintf("/~%s~%s", gtmPartition, pool))
@@ -181,12 +182,12 @@ func ShowGTMPool(host, pool string) (*backend.Response, *Pool, error) {
 }
 
 //ShowGTMPoolMembers shows members on a specific pool
-func ShowGTMPoolMembers(host, pool string) (*backend.Response, *PoolMembers, error) {
+func ShowGTMPoolMembers(host, pool string) (*backend.Response, *PoolMembers, *errors.Error) {
 	// Declaration GTM Pool Member
 	gtmpoolmembers := new(PoolMembers)
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, nil, err
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri, fmt.Sprintf("/~%s~%s/members", gtmPartition, pool))
@@ -198,10 +199,10 @@ func ShowGTMPoolMembers(host, pool string) (*backend.Response, *PoolMembers, err
 }
 
 //PostGTMPool creates a new pool on a trafficmanager
-func PostGTMPool(host string, json *CreatePool) (*backend.Response, error) {
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, err
+func PostGTMPool(host string, json *CreatePool) (*backend.Response, *errors.Error) {
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri)
@@ -213,7 +214,6 @@ func PostGTMPool(host string, json *CreatePool) (*backend.Response, error) {
 		json.Members[i].Loadbalancer = ""
 	}
 	r, err := backend.Request(common.POST, u.String(), &json)
-	fmt.Println(json)
 	if err != nil {
 		return nil, err
 	}
@@ -221,10 +221,10 @@ func PostGTMPool(host string, json *CreatePool) (*backend.Response, error) {
 }
 
 //PostGTMPoolMember adds new members to an existing pool on a trafficmanager
-func PostGTMPoolMember(host string, pool string, json *CreatePoolMember) (*backend.Response, error) {
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, err
+func PostGTMPoolMember(host string, pool string, json *CreatePoolMember) (*backend.Response, *errors.Error) {
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri, pool, common.MembersURI)
@@ -242,10 +242,10 @@ func PostGTMPoolMember(host string, pool string, json *CreatePoolMember) (*backe
 }
 
 // DeleteGTMPool deletes a pool on a trafficmanager
-func DeleteGTMPool(host, pool string) (*backend.Response, error) {
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, err
+func DeleteGTMPool(host, pool string) (*backend.Response, *errors.Error) {
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri)
@@ -259,10 +259,10 @@ func DeleteGTMPool(host, pool string) (*backend.Response, error) {
 }
 
 // DeleteGTMPoolMember delete pool member on a trafficmanager
-func DeleteGTMPoolMember(host, pool string, poolmember *RemovePoolMember) (*backend.Response, error) {
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, err
+func DeleteGTMPoolMember(host, pool string, poolmember *RemovePoolMember) (*backend.Response, *errors.Error) {
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri)
@@ -276,10 +276,10 @@ func DeleteGTMPoolMember(host, pool string, poolmember *RemovePoolMember) (*back
 }
 
 // PutGTMPoolMemberStatus modify status of wideip pool member
-func PutGTMPoolMemberStatus(host, pool string, poolmember *ModifyPoolMemberStatus) (*backend.Response, error) {
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, err
+func PutGTMPoolMemberStatus(host, pool string, poolmember *ModifyPoolMemberStatus) (*backend.Response, *errors.Error) {
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri)
@@ -305,10 +305,10 @@ func PutGTMPoolMemberStatus(host, pool string, poolmember *ModifyPoolMemberStatu
 }
 
 // PutGTMPoolStatus modify status of wideip pool
-func PutGTMPoolStatus(host, pool string, poolmodify *ModifyPoolStatus) (*backend.Response, error) {
-	u, err := url.Parse(host)
-	if err != nil {
-		return nil, err
+func PutGTMPoolStatus(host, pool string, poolmodify *ModifyPoolStatus) (*backend.Response, *errors.Error) {
+	u, errParse := url.Parse(host)
+	if errParse != nil {
+		return nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri)
