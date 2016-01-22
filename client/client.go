@@ -956,17 +956,17 @@ func LTMAddressList(c *gin.Context) {
 	lbpair := c.Params.ByName("lbpair")
 	f5url, err := ltm.Loadbalancer(lbpair, common.Conf.Ltmdevicenames)
 	if err != nil {
-		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddressdocumentationuri"], c)
+		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 		return
 	}
 	f5url = strings.Replace(f5url, common.LtmURI, "", -1)
 	res, addresslist, err := ltm.ShowLTMAddressList(f5url, common.BlackList)
 	if err != nil {
-		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddressdocumentationuri"], c)
+		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 		return
 	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
-	respondWithStatus(res.Status, "", addresslist, returnerror.ErrorMessage(), common.Conf.Documentation["ltmaddressdocumentationuri"], c)
+	respondWithStatus(res.Status, "", addresslist, returnerror.ErrorMessage(), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 }
 
 // LTMBlockIPPatch add ips which will be blocked
@@ -975,7 +975,7 @@ func LTMBlockIPPatch(c *gin.Context) {
 
 	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	if err != nil {
-		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddressdocumentationuri"], c)
+		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 		return
 	}
 	f5url = strings.Replace(f5url, common.LtmURI, "", -1)
@@ -986,7 +986,7 @@ func LTMBlockIPPatch(c *gin.Context) {
 	} else {
 		res, err := ltm.PatchLTMBlockAddresses(f5url, &blockips)
 		if err != nil {
-			respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddressdocumentationuri"], c)
+			respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 			return
 		}
 		json.Unmarshal([]byte(res.Body), &returnerror)
@@ -1004,7 +1004,7 @@ func LTMWhiteIPPatch(c *gin.Context) {
 
 	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	if err != nil {
-		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddressdocumentationuri"], c)
+		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 		return
 	}
 	f5url = strings.Replace(f5url, common.LtmURI, "", -1)
@@ -1015,7 +1015,7 @@ func LTMWhiteIPPatch(c *gin.Context) {
 	} else {
 		res, err := ltm.PatchLTMWhiteAddresses(f5url, &whiteips)
 		if err != nil {
-			respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddressdocumentationuri"], c)
+			respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 			return
 		}
 		json.Unmarshal([]byte(res.Body), &returnerror)
@@ -1033,7 +1033,7 @@ func LTMRemoveBlockIPPatch(c *gin.Context) {
 
 	f5url, err := ltm.Loadbalancer(c.Params.ByName("lbpair"), common.Conf.Ltmdevicenames)
 	if err != nil {
-		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddressdocumentationuri"], c)
+		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 		return
 	}
 	f5url = strings.Replace(f5url, common.LtmURI, "", -1)
@@ -1044,7 +1044,7 @@ func LTMRemoveBlockIPPatch(c *gin.Context) {
 	} else {
 		res, err := ltm.DeleteLTMBlockAddresses(f5url, &unblockips)
 		if err != nil {
-			respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddressdocumentationuri"], c)
+			respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 			return
 		}
 		json.Unmarshal([]byte(res.Body), &returnerror)
