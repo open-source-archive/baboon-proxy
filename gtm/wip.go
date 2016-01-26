@@ -44,10 +44,10 @@ type Wip struct {
 
 // CreateWip struct to add a wide ip
 type CreateWip struct {
-	Name  string `json:"name" binding:"required"`
+	Name  string `json:"name"`
 	Pools []struct {
 		Name string `json:"name"`
-	} `json:"pools" binding:"required"`
+	} `json:"pools"`
 	Poollbmode string `json:"poolLbMode"`
 }
 
