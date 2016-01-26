@@ -63,14 +63,14 @@ type Pool struct {
 
 // CreatePool struct to create a pool
 type CreatePool struct {
-	Name    string             `json:"name" binding:"required"`
-	Members []CreatePoolMember `json:"members" binding:"required"`
-	Monitor string             `json:"monitor",binding:"required"`
+	Name    string             `json:"name"`
+	Members []CreatePoolMember `json:"members"`
+	Monitor string             `json:"monitor"`
 }
 
 // CreatePoolMember struct to create a member in a pool
 type CreatePoolMember struct {
-	Name         string `json:"name" binding:"required"`
+	Name         string `json:"name"`
 	Loadbalancer string `json:"loadbalancer,omitempty"`
 	Partition    string `json:"partition,omitempty"`
 	Subpath      string `json:"subPath,omitempty"`
@@ -79,15 +79,15 @@ type CreatePoolMember struct {
 
 // RemovePoolMember struct to delete a member in a pool
 type RemovePoolMember struct {
-	Name         string `json:"name" binding:"required"`
-	Loadbalancer string `json:"loadbalancer" binding:"required"`
+	Name         string `json:"name"`
+	Loadbalancer string `json:"loadbalancer"`
 }
 
 // ModifyPoolMemberStatus struct to modify pool member status on gtm
 type ModifyPoolMemberStatus struct {
-	Name         string `json:"name" binding:"required"`
-	Loadbalancer string `json:"loadbalancer" binding:"required"`
-	Status       bool   `json:"status" binding:"required"`
+	Name         string `json:"name"`
+	Loadbalancer string `json:"loadbalancer"`
+	Status       bool   `json:"status"`
 }
 
 // ModifyPoolStatus struct to modify a pool status client-side
@@ -97,22 +97,22 @@ type ModifyPoolStatus struct {
 
 // EnablePoolMemberStatus enables a gtm pool member client-side
 type EnablePoolMemberStatus struct {
-	Enabled bool `json:"enabled" binding:"required"`
+	Enabled bool `json:"enabled"`
 }
 
 // DisablePoolMemberStatus disables a gtm pool member client-side
 type DisablePoolMemberStatus struct {
-	Disabled bool `json:"disabled" binding:"required"`
+	Disabled bool `json:"disabled"`
 }
 
 // EnablePoolStatus enables a gtm pool client-side
 type EnablePoolStatus struct {
-	Enabled bool `json:"enabled" binding:"required"`
+	Enabled bool `json:"enabled"`
 }
 
 // DisablePoolStatus disables a gtm pool client-side
 type DisablePoolStatus struct {
-	Disabled bool `json:"disabled" binding:"required"`
+	Disabled bool `json:"disabled"`
 }
 
 // PoolMembers struct provides information about multiple members in one pool
