@@ -18,6 +18,11 @@ import (
 	"github.com/zalando-techmonkeys/baboon-proxy/util"
 )
 
+type Version struct {
+	Build string
+	Hash  string
+}
+
 type Response struct {
 	Type   string `json:"type"`
 	Status int    `json:"status"`
@@ -26,6 +31,11 @@ type Response struct {
 }
 
 var returnerror errors.Error
+
+// BaboonVersion shows current githash and build time for debugging
+func (v Version) BaboonVersion(c *gin.Context) {
+	respondWithStatus(http.StatusOK, "", v, "", "", c)
+}
 
 // GTMWipDelete delete wide ip
 func GTMWipDelete(c *gin.Context) {
