@@ -1,7 +1,8 @@
 # baboon-proxy
 [![Build Status](https://travis-ci.org/zalando-techmonkeys/baboon-proxy.svg?branch=master)](https://travis-ci.org/zalando-techmonkeys/baboon-proxy)
-[![license](http://img.shields.io/badge/license-MIT-yellow.svg?style=flat)](https://raw.githubusercontent.com/zalando-techmonkeys/baboon-proxy/master/LICENSE)
+[![License](http://img.shields.io/badge/license-MIT-yellow.svg?style=flat)](https://raw.githubusercontent.com/zalando-techmonkeys/baboon-proxy/master/LICENSE)
 [![Go Report Card](http://goreportcard.com/badge/zalando-techmonkeys/baboon-proxy)](http://goreportcard.com/report/zalando-techmonkeys/baboon-proxy)
+[![Documentation Status](https://readthedocs.org/projects/techmonkeys/badge/?version=latest)](http://techmonkeys.readthedocs.org/en/latest/?badge=latest)
 
 ## F5 GTM/LTM Proxy API with OAuth2
 
