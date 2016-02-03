@@ -11,6 +11,7 @@ const (
 	DELETE
 )
 
+// Conf inherits baboon config
 var Conf *config.Config
 
 // Protocol Scheme

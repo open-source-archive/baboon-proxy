@@ -18,12 +18,15 @@ import (
 	"github.com/zalando-techmonkeys/baboon-proxy/util"
 )
 
+// Version struct provides information of current build
 type Version struct {
-	Build string
-	Hash  string
+	Build string `json:"buildTime"`
+	Hash  string `json:"gitHash"`
 }
 
-type Response struct {
+// ErrorResponse provides detailed information regarding errors
+// including a link to baboon documentation
+type ErrorResponse struct {
 	Type   string `json:"type"`
 	Status int    `json:"status"`
 	Title  string `json:"title"`
@@ -477,19 +480,18 @@ func LTMVirtualServerPost(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Create virtual server",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmvirtualdocumentationuri"], c)
 		return
-	} else {
-		res, err := ltm.PostLTMVirtualServer(f5url, &vservercreate)
-		if err != nil {
-			respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmvirtualdocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		if res.Status == 200 {
-			res.Status = 201
-		}
-		respondWithStatus(res.Status, "Virtual server added", vservercreate.Name,
-			returnerror.ErrorMessage(), common.Conf.Documentation["ltmvirtualdocumentationuri"], c)
 	}
+	res, err := ltm.PostLTMVirtualServer(f5url, &vservercreate)
+	if err != nil {
+		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmvirtualdocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	if res.Status == 200 {
+		res.Status = 201
+	}
+	respondWithStatus(res.Status, "Virtual server added", vservercreate.Name,
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmvirtualdocumentationuri"], c)
 }
 
 // LTMSSLKeyPost install a new ssl key on local traffic manager
@@ -530,15 +532,18 @@ func LTMPoolPost(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Create pool",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmpooldocumentationuri"], c)
 		return
-	} else {
-		res, _ := ltm.PostLTMPool(f5url, &poolcreate)
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		if res.Status == 200 {
-			res.Status = 201
-		}
-		respondWithStatus(res.Status, "Pool created", poolcreate.Name,
-			returnerror.ErrorMessage(), common.Conf.Documentation["ltmpooldocumentationuri"], c)
 	}
+	res, err := ltm.PostLTMPool(f5url, &poolcreate)
+	if err != nil {
+		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmpooldocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	if res.Status == 200 {
+		res.Status = 201
+	}
+	respondWithStatus(res.Status, "Pool created", poolcreate.Name,
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmpooldocumentationuri"], c)
 }
 
 // GTMPoolPost create a new wide IP pool with members and a monitoring check on a global traffic manager
@@ -554,19 +559,18 @@ func GTMPoolPost(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Create pool",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["gtmpooldocumentationuri"], c)
 		return
-	} else {
-		res, err := gtm.PostGTMPool(f5url, &poolcreate)
-		if err != nil {
-			respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["gtmpooldocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		if res.Status == 200 {
-			res.Status = 201
-		}
-		respondWithStatus(res.Status, "Pool created", poolcreate.Name,
-			returnerror.ErrorMessage(), common.Conf.Documentation["gtmpooldocumentationuri"], c)
 	}
+	res, err := gtm.PostGTMPool(f5url, &poolcreate)
+	if err != nil {
+		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["gtmpooldocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	if res.Status == 200 {
+		res.Status = 201
+	}
+	respondWithStatus(res.Status, "Pool created", poolcreate.Name,
+		returnerror.ErrorMessage(), common.Conf.Documentation["gtmpooldocumentationuri"], c)
 }
 
 // GTMPoolMemberPost adds additional LTM virtual server on a global traffic manager pool
@@ -582,19 +586,18 @@ func GTMPoolMemberPost(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Add pool member",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
 		return
-	} else {
-		res, err := gtm.PostGTMPoolMember(f5url, pool, &poolmember)
-		if err != nil {
-			respondWithStatus(err.Status, pool, nil, err.Message, common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		if res.Status == 200 {
-			res.Status = 201
-		}
-		respondWithStatus(res.Status, "Poolmember added", poolmember.Name,
-			returnerror.ErrorMessage(), common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
 	}
+	res, err := gtm.PostGTMPoolMember(f5url, pool, &poolmember)
+	if err != nil {
+		respondWithStatus(err.Status, pool, nil, err.Message, common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	if res.Status == 200 {
+		res.Status = 201
+	}
+	respondWithStatus(res.Status, "Poolmember added", poolmember.Name,
+		returnerror.ErrorMessage(), common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
 }
 
 // GTMWideipPost create new wide IP on a global traffic manager
@@ -610,20 +613,18 @@ func GTMWideipPost(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Create wideip",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["gtmwideipdocumentationuri"], c)
 		return
-	} else {
-		res, err := gtm.PostGTMWip(f5url, &wideipcreate)
-		if err != nil {
-			respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["gtmwideipdocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		if res.Status == 200 {
-			res.Status = 201
-		}
-		respondWithStatus(res.Status, "WideIP created", wideipcreate.Name,
-			returnerror.ErrorMessage(), common.Conf.Documentation["gtmwideipdocumentationuri"], c)
+	}
+	res, err := gtm.PostGTMWip(f5url, &wideipcreate)
+	if err != nil {
+		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["gtmwideipdocumentationuri"], c)
 		return
 	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	if res.Status == 200 {
+		res.Status = 201
+	}
+	respondWithStatus(res.Status, "WideIP created", wideipcreate.Name,
+		returnerror.ErrorMessage(), common.Conf.Documentation["gtmwideipdocumentationuri"], c)
 }
 
 // LTMPoolMemberPost add new members to a specific pool on a local traffic manager
@@ -641,20 +642,19 @@ func LTMPoolMemberPost(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Create pool member",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 		return
-	} else {
-		res, err := ltm.PostLTMPoolMember(f5url, pool, &poolmembercreate)
-		if err != nil {
-			respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-
-		if res.Status == 200 {
-			res.Status = 201
-		}
-		respondWithStatus(res.Status, "Poolmember added", poolmembercreate.Name,
-			returnerror.ErrorMessage(), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 	}
+	res, err := ltm.PostLTMPoolMember(f5url, pool, &poolmembercreate)
+	if err != nil {
+		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+
+	if res.Status == 200 {
+		res.Status = 201
+	}
+	respondWithStatus(res.Status, "Poolmember added", poolmembercreate.Name,
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 }
 
 // LTMPoolPut modify pool (old ones will be deleted) or change monitoring
@@ -671,17 +671,16 @@ func LTMPoolPut(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Modify pool",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmpooldocumentationuri"], c)
 		return
-	} else {
-		res, err := ltm.PutLTMPool(f5url, poolmodify.Name, &poolmodify)
-		if err != nil {
-			respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmpooldocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-
-		respondWithStatus(res.Status, "Pool modified", poolmodify.Name,
-			returnerror.ErrorMessage(), common.Conf.Documentation["ltmpooldocumentationuri"], c)
 	}
+	res, err := ltm.PutLTMPool(f5url, poolmodify.Name, &poolmodify)
+	if err != nil {
+		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmpooldocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+
+	respondWithStatus(res.Status, "Pool modified", poolmodify.Name,
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmpooldocumentationuri"], c)
 }
 
 // LTMPoolDelete delete a pool on a local traffic manager
@@ -733,16 +732,15 @@ func GTMPoolMemberDelete(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Delete pool member",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
 		return
-	} else {
-		res, err := gtm.DeleteGTMPoolMember(f5url, pool, &poolmemberdelete)
-		if err != nil {
-			respondWithStatus(err.Status, pool, nil, err.Message, common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		respondWithStatus(res.Status, "Poolmember deleted", poolmemberdelete.Name,
-			returnerror.ErrorMessage(), common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
 	}
+	res, err := gtm.DeleteGTMPoolMember(f5url, pool, &poolmemberdelete)
+	if err != nil {
+		respondWithStatus(err.Status, pool, nil, err.Message, common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	respondWithStatus(res.Status, "Poolmember deleted", poolmemberdelete.Name,
+		returnerror.ErrorMessage(), common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
 }
 
 // GTMPoolMemberStatusPut modify pool member status on a global traffic manager (enabled, disabled)
@@ -758,16 +756,15 @@ func GTMPoolMemberStatusPut(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Modify pool member status",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
 		return
-	} else {
-		res, err := gtm.PutGTMPoolMemberStatus(f5url, pool, &poolmemberstatus)
-		if err != nil {
-			respondWithStatus(err.Status, pool, nil, err.Message, common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		respondWithStatus(res.Status, "Poolmember modified", poolmemberstatus.Name,
-			returnerror.ErrorMessage(), common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
 	}
+	res, err := gtm.PutGTMPoolMemberStatus(f5url, pool, &poolmemberstatus)
+	if err != nil {
+		respondWithStatus(err.Status, pool, nil, err.Message, common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	respondWithStatus(res.Status, "Poolmember modified", poolmemberstatus.Name,
+		returnerror.ErrorMessage(), common.Conf.Documentation["gtmpoolmemberdocumentationuri"], c)
 }
 
 // GTMPoolStatusPut modify pool member status on a global traffic manager (enabled, disabled)
@@ -783,16 +780,15 @@ func GTMPoolStatusPut(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Modify pool status",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["gtmpooldocumentationuri"], c)
 		return
-	} else {
-		res, err := gtm.PutGTMPoolStatus(f5url, pool, &poolstatus)
-		if err != nil {
-			respondWithStatus(err.Status, pool, nil, err.Message, common.Conf.Documentation["gtmpooldocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		respondWithStatus(res.Status, "Pool modified", pool,
-			returnerror.ErrorMessage(), common.Conf.Documentation["gtmpooldocumentationuri"], c)
 	}
+	res, err := gtm.PutGTMPoolStatus(f5url, pool, &poolstatus)
+	if err != nil {
+		respondWithStatus(err.Status, pool, nil, err.Message, common.Conf.Documentation["gtmpooldocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	respondWithStatus(res.Status, "Pool modified", pool,
+		returnerror.ErrorMessage(), common.Conf.Documentation["gtmpooldocumentationuri"], c)
 }
 
 // LTMPoolMemberPut modify pool members on a local traffic manager (enabled, disabled, force-offline)
@@ -808,16 +804,15 @@ func LTMPoolMemberPut(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Modify pool member",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 		return
-	} else {
-		res, err := ltm.PutLTMPoolMember(f5url, pool, poolmembermodify.Name, poolmembermodify.Status)
-		if err != nil {
-			respondWithStatus(err.Status, pool, nil, err.Message, common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		respondWithStatus(res.Status, "Poolmember modified", poolmembermodify.Name,
-			returnerror.ErrorMessage(), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 	}
+	res, err := ltm.PutLTMPoolMember(f5url, pool, poolmembermodify.Name, poolmembermodify.Status)
+	if err != nil {
+		respondWithStatus(err.Status, pool, nil, err.Message, common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	respondWithStatus(res.Status, "Poolmember modified", poolmembermodify.Name,
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 }
 
 // LTMPoolMemberDelete delete specific pool members on a local traffic manager
@@ -833,16 +828,15 @@ func LTMPoolMemberDelete(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Delete pool member",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 		return
-	} else {
-		res, err := ltm.DeleteLTMPoolMember(f5url, pool, poolmemberdelete.Name)
-		if err != nil {
-			respondWithStatus(err.Status, pool, nil, err.Message, common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		respondWithStatus(res.Status, "Poolmember deleted", poolmemberdelete.Name,
-			returnerror.ErrorMessage(), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 	}
+	res, err := ltm.DeleteLTMPoolMember(f5url, pool, poolmemberdelete.Name)
+	if err != nil {
+		respondWithStatus(err.Status, pool, nil, err.Message, common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	respondWithStatus(res.Status, "Poolmember deleted", poolmemberdelete.Name,
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmpoolmemberdocumentationuri"], c)
 }
 
 // LTMDataGroupPost add new internal datagroup on a local traffic manager
@@ -858,19 +852,18 @@ func LTMDataGroupPost(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Create datagroup item",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 		return
-	} else {
-		res, err := ltm.PostLTMDataGroup(f5url, direction, &datagroupcreate)
-		if err != nil {
-			respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		if res.Status == 200 {
-			res.Status = 201
-		}
-		respondWithStatus(res.Status, "Datagroup added", datagroupcreate.Name,
-			returnerror.ErrorMessage(), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 	}
+	res, err := ltm.PostLTMDataGroup(f5url, direction, &datagroupcreate)
+	if err != nil {
+		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	if res.Status == 200 {
+		res.Status = 201
+	}
+	respondWithStatus(res.Status, "Datagroup added", datagroupcreate.Name,
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 }
 
 // LTMDataGroupDelete delete a internal datagroup on a local traffic manager
@@ -886,16 +879,15 @@ func LTMDataGroupDelete(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Delete datagroup item",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 		return
-	} else {
-		res, err := ltm.DeleteLTMDataGroup(f5url, direction, datagroupdelete.Name)
-		if err != nil {
-			respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		respondWithStatus(res.Status, "Datagroup deleted", datagroupdelete.Name,
-			returnerror.ErrorMessage(), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 	}
+	res, err := ltm.DeleteLTMDataGroup(f5url, direction, datagroupdelete.Name)
+	if err != nil {
+		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	respondWithStatus(res.Status, "Datagroup deleted", datagroupdelete.Name,
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 }
 
 // LTMDataGroupItemPut remove all existing records in a datagroup and add new records (ip or string)
@@ -915,19 +907,18 @@ func LTMDataGroupItemPut(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Create datagroup item",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 		return
-	} else {
-		res, err := ltm.PatchLTMDataGroupItem(f5url, direction, datagroupname, &datagroupitemcreate)
-		if err != nil {
-			respondWithStatus(err.Status, datagroupname, nil, err.Message, common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		if res.Status == 200 {
-			res.Status = 201
-		}
-		respondWithStatus(res.Status, "Datagroup item added in", datagroupname,
-			returnerror.ErrorMessage(), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 	}
+	res, err := ltm.PatchLTMDataGroupItem(f5url, direction, datagroupname, &datagroupitemcreate)
+	if err != nil {
+		respondWithStatus(err.Status, datagroupname, nil, err.Message, common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	if res.Status == 200 {
+		res.Status = 201
+	}
+	respondWithStatus(res.Status, "Datagroup item added in", datagroupname,
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 }
 
 // LTMDataGroupItemPatch add an item to a datagroup (ip or string) on a local traffic manager
@@ -946,19 +937,18 @@ func LTMDataGroupItemPatch(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Create datagroup item",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 		return
-	} else {
-		res, err := ltm.PatchLTMDataGroupItem(f5url, direction, datagroupname, &datagroupitemcreate)
-		if err != nil {
-			respondWithStatus(err.Status, datagroupname, nil, err.Message, common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		if res.Status == 200 {
-			res.Status = 201
-		}
-		respondWithStatus(res.Status, "Datagroup item added in", datagroupname,
-			returnerror.ErrorMessage(), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 	}
+	res, err := ltm.PatchLTMDataGroupItem(f5url, direction, datagroupname, &datagroupitemcreate)
+	if err != nil {
+		respondWithStatus(err.Status, datagroupname, nil, err.Message, common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	if res.Status == 200 {
+		res.Status = 201
+	}
+	respondWithStatus(res.Status, "Datagroup item added in", datagroupname,
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmdatagroupdocumentationuri"], c)
 }
 
 // LTMAddressList show local traffic blocked ip addresses
@@ -993,19 +983,18 @@ func LTMBlockIPPatch(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Block IPs",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 		return
-	} else {
-		res, err := ltm.PatchLTMBlockAddresses(f5url, &blockips)
-		if err != nil {
-			respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		if res.Status == 200 {
-			res.Status = 201
-		}
-		respondWithStatus(res.Status, "IP(s) blocked successfully", blockips,
-			returnerror.ErrorMessage(), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 	}
+	res, err := ltm.PatchLTMBlockAddresses(f5url, &blockips)
+	if err != nil {
+		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	if res.Status == 200 {
+		res.Status = 201
+	}
+	respondWithStatus(res.Status, "IP(s) blocked successfully", blockips,
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 }
 
 // LTMWhiteIPPatch add ips which will be whitelisted
@@ -1022,19 +1011,18 @@ func LTMWhiteIPPatch(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "White IPs",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 		return
-	} else {
-		res, err := ltm.PatchLTMWhiteAddresses(f5url, &whiteips)
-		if err != nil {
-			respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		if res.Status == 200 {
-			res.Status = 201
-		}
-		respondWithStatus(res.Status, "IP(s) whitelisted successfully", whiteips,
-			returnerror.ErrorMessage(), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 	}
+	res, err := ltm.PatchLTMWhiteAddresses(f5url, &whiteips)
+	if err != nil {
+		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	if res.Status == 200 {
+		res.Status = 201
+	}
+	respondWithStatus(res.Status, "IP(s) whitelisted successfully", whiteips,
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 }
 
 // LTMRemoveBlockIPPatch remove ips which are currently blocked
@@ -1051,16 +1039,15 @@ func LTMRemoveBlockIPPatch(c *gin.Context) {
 		respondWithStatus(400, "Invalid JSON data", "Unblock IPs",
 			fmt.Sprintf("%s", err), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 		return
-	} else {
-		res, err := ltm.DeleteLTMBlockAddresses(f5url, &unblockips)
-		if err != nil {
-			respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
-			return
-		}
-		json.Unmarshal([]byte(res.Body), &returnerror)
-		respondWithStatus(res.Status, "IP(s) removed successfully", fmt.Sprintf("%+v", unblockips),
-			returnerror.ErrorMessage(), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 	}
+	res, err := ltm.DeleteLTMBlockAddresses(f5url, &unblockips)
+	if err != nil {
+		respondWithStatus(err.Status, "", nil, err.Message, common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
+		return
+	}
+	json.Unmarshal([]byte(res.Body), &returnerror)
+	respondWithStatus(res.Status, "IP(s) removed successfully", fmt.Sprintf("%+v", unblockips),
+		returnerror.ErrorMessage(), common.Conf.Documentation["ltmaddresslistdocumentationuri"], c)
 }
 
 // LoggerMiddleware log user activity
@@ -1146,21 +1133,21 @@ func respondWithStatus(code int, message, name interface{}, e, documentation str
 		c.JSON(code, gin.H{"message": fmt.Sprintf("%s %+v", message, name)})
 	case 400:
 		c.Set("message", e)
-		c.JSON(code, Response{Type: documentation, Status: code,
+		c.JSON(code, ErrorResponse{Type: documentation, Status: code,
 			Title: "Bad Request", Detail: e})
 	case 404:
 		c.Set("message", e)
-		c.JSON(code, Response{Type: documentation, Status: code,
+		c.JSON(code, ErrorResponse{Type: documentation, Status: code,
 			Title: "Not Found", Detail: e})
 	case 409:
 		c.Set("message", e)
 		c.Header("Content-Type", "application/problem+json")
-		c.JSON(code, Response{Type: documentation, Status: code,
+		c.JSON(code, ErrorResponse{Type: documentation, Status: code,
 			Title: "Conflict", Detail: e})
 	default:
 		c.Set("message", e)
 		c.Header("Content-Type", "application/problem+json")
-		c.JSON(code, Response{Type: documentation, Status: code,
+		c.JSON(code, ErrorResponse{Type: documentation, Status: code,
 			Title: e, Detail: e})
 	}
 }

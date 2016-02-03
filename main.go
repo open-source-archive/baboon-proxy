@@ -19,8 +19,10 @@ var (
 	sslenabled *bool
 	gtmenabled *bool
 	ltmenabled *bool
-	BuildTime  = "No BuildStamp Provided"
-	GitHash    = "No GitHash Provided"
+	// BuildTime for Debugging
+	BuildTime = "No BuildTime Provided"
+	// GitHash for Debugging
+	GitHash = "No GitHash Provided"
 )
 
 func usage() {
