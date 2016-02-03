@@ -53,7 +53,7 @@ func ShowLTMAddressList(host, address string) (*backend.Response, *AddressList, 
 	return res, addresslist, nil
 }
 
-// ShowLTMAddressList returns a specific address list on LB
+// ShowLTMAddressListName returns a specific address list on LB
 func ShowLTMAddressListName(host, address string) (*backend.Response, *AddressList, *errors.Error) {
 	addresslist := new(AddressList)
 	u, errParse := url.Parse(host)

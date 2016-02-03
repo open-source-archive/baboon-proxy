@@ -6,14 +6,17 @@ import (
 )
 
 var (
+	// ErrorCodeBadRequestParse 400 bad request parse message
 	ErrorCodeBadRequestParse = Error{
 		Status:  http.StatusBadRequest,
 		Message: "Not able to parse url",
 	}
+	// ErrorCodeNotFoundPattern 404 pattern error message
 	ErrorCodeNotFoundPattern = Error{
 		Status:  http.StatusNotFound,
 		Message: "Pattern not found, use itm (for internal) or gtm (for external)",
 	}
+	// ErrorCodeBadRequestMarshal 400 marshal message
 	ErrorCodeBadRequestMarshal = Error{
 		Status:  http.StatusBadRequest,
 		Message: "Not able to marshal http payload",

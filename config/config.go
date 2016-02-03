@@ -34,42 +34,42 @@ type Config struct {
 	Partition            map[string]string
 }
 
-// ConfigError contain fields of config error handling
+// Error contain fields of config error handling
 //created a struct just for future usage
-type ConfigError struct {
+type Error struct {
 	Message string
 }
 
 // Error return config error
 // viper can not parse yaml file
-func (e *ConfigError) Error() string {
+func (e *Error) Error() string {
 	return fmt.Sprintf(e.Message)
 }
 
-// ConfigInit initiliaze configuration file
-func ConfigInit(filename string) (*Config, *ConfigError) {
+// InitConfig initiliaze configuration file
+func InitConfig(filename string) (*Config, *Error) {
 	viper.SetConfigType("YAML")
 	f, err := os.Open(filename)
 	if err != nil {
-		return nil, &ConfigError{"could not read configuration files."}
+		return nil, &Error{"could not read configuration files."}
 	}
 	err = viper.ReadConfig(f)
 	if err != nil {
-		return nil, &ConfigError{"configuration format is not correct."}
+		return nil, &Error{"configuration format is not correct."}
 	}
 
 	var config Config
 	err = viper.Unmarshal(&config)
 	if err != nil {
 		glog.Errorf("Cannot read configuration. Reason: %s", err)
-		return nil, &ConfigError{"cannot read configuration, something must be wrong."}
+		return nil, &Error{"cannot read configuration, something must be wrong."}
 	}
 
 	return &config, nil
 }
 
 // LoadAuthConf extract necessary oAuth2 information
-func LoadAuthConf(config *Config) ([]ginoauth2.AccessTuple, []ginoauth2.AccessTuple, *oauth2.Endpoint, *ConfigError) {
+func LoadAuthConf(config *Config) ([]ginoauth2.AccessTuple, []ginoauth2.AccessTuple, *oauth2.Endpoint, *Error) {
 	var rootUsers = []ginoauth2.AccessTuple{}
 	var emergencyUsers = []ginoauth2.AccessTuple{}
 	var endpoint = oauth2.Endpoint{}
@@ -78,7 +78,7 @@ func LoadAuthConf(config *Config) ([]ginoauth2.AccessTuple, []ginoauth2.AccessTu
 		fullname := user.Fullname
 		role := user.Role
 		if username == "" || fullname == "" || role == "" {
-			return nil, nil, nil, &ConfigError{"configuration is invalid. TokenRUL or AuthURL are missing"}
+			return nil, nil, nil, &Error{"configuration is invalid. TokenRUL or AuthURL are missing"}
 		}
 		u := ginoauth2.AccessTuple{role, username, fullname}
 		if user.Group == "root" {
@@ -91,7 +91,7 @@ func LoadAuthConf(config *Config) ([]ginoauth2.AccessTuple, []ginoauth2.AccessTu
 	authURL := config.Endpoints["AuthURL"]
 	tokenURL := config.Endpoints["TokenURL"]
 	if authURL == "" || tokenURL == "" {
-		return nil, nil, nil, &ConfigError{"configuration is invalid. TokenURL or AuthURL are missing"}
+		return nil, nil, nil, &Error{"configuration is invalid. TokenURL or AuthURL are missing"}
 	}
 	endpoint = oauth2.Endpoint{authURL, tokenURL}
 	return rootUsers, emergencyUsers, &endpoint, nil
@@ -99,8 +99,8 @@ func LoadAuthConf(config *Config) ([]ginoauth2.AccessTuple, []ginoauth2.AccessTu
 
 // LoadConfig load config file
 func LoadConfig() *Config {
-	var err *ConfigError
-	conf, err := ConfigInit("config.yaml")
+	var err *Error
+	conf, err := InitConfig("config.yaml")
 	if err != nil {
 		glog.Errorf("Cannot load configuration. Reason: %s", err.Message)
 		panic("Cannot load configuration for Baboon. Exiting.")
