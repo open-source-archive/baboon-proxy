@@ -171,7 +171,7 @@ func GTMIRuleList(c *gin.Context) {
 	respondWithStatus(res.Status, "", gtmirulelist, returnerror.ErrorMessage(), common.Conf.Documentation["gtmiruledocumentationuri"], c)
 }
 
-// GTMIRuleNameList show specfic global traffic manager iRule
+// GTMIRuleNameList show specific global traffic manager iRule
 func GTMIRuleNameList(c *gin.Context) {
 	tm := c.Params.ByName("trafficmanager")
 	irule := c.Params.ByName("irule")
