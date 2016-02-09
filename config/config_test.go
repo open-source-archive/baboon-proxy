@@ -1,7 +1,9 @@
 package config
 
-import "testing"
-import "fmt"
+import (
+	"fmt"
+	"testing"
+)
 
 //tests that if the config file is missing, the software recognizes the problem
 func TestMissingFile(t *testing.T) {

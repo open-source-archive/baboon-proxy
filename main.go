@@ -42,7 +42,7 @@ func init() {
 
 func main() {
 	app := gin.New()
-	conf := config.LoadConfig()
+	var conf *config.Config
 
 	// Version
 	version := client.Version{Build: BuildTime, Hash: GitHash}
@@ -101,7 +101,8 @@ func main() {
 			publicLTM.GET("/virtuals/:virtual/profiles", client.LTMProfileList)
 			publicLTM.GET("/datagroups", client.LTMDataGroupList)
 			publicLTM.GET("/datagroups/:datagroupname", client.LTMDataGroupNameList)
-			publicLTM.GET("/blockips", client.LTMAddressList)
+			publicLTM.GET("/blacklist", client.LTMBlackAddressList)
+			publicLTM.GET("/whitelist", client.LTMWhiteAddressList)
 			publicLTM.GET("/irules", client.LTMIRuleList)
 			publicLTM.GET("/irules/:irule", client.LTMIRuleNameList)
 		}
@@ -124,9 +125,10 @@ func main() {
 		emergencyLTM := app.Group("/api/ltms/:lbpair")
 		emergencyLTM.Use(ginoauth2.Auth(ginoauth2.UidCheck, *OAuth2Endpoint, emergencyusers))
 		{
-			emergencyLTM.PATCH("/blockips", client.LTMBlockIPPatch)
-			emergencyLTM.PATCH("/whiteips", client.LTMWhiteIPPatch)
-			emergencyLTM.DELETE("/blockips", client.LTMRemoveBlockIPPatch)
+			emergencyLTM.PATCH("/blacklist", client.LTMBlockIPPatch)
+			emergencyLTM.PATCH("/whitelist", client.LTMWhiteIPPatch)
+			emergencyLTM.DELETE("/whitelist", client.LTMRemoveWhiteIPPatch)
+			emergencyLTM.DELETE("/blacklist", client.LTMRemoveBlockIPPatch)
 		}
 	}
 	switch {

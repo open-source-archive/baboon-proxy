@@ -2,10 +2,13 @@ package backend
 
 import (
 	"github.com/golang/glog"
-	"github.com/zalando-techmonkeys/baboon-proxy/common"
+	"github.com/zalando-techmonkeys/baboon-proxy/config"
 )
 
-var credentials *Credentials
+var (
+	conf        = config.LoadConfig()
+	credentials *Credentials
+)
 
 // Credentials contain fields
 // which are necessary to use
@@ -20,12 +23,12 @@ type Credentials struct {
 // from F5 device
 func InitCredentials() {
 	switch {
-	case common.Conf.Backend["f5user"] == "":
+	case conf.Backend["f5user"] == "":
 		glog.Fatalf("Could not get F5 user from config file")
-	case common.Conf.Backend["f5password"] == "":
+	case conf.Backend["f5password"] == "":
 		glog.Fatalf("Could not get F5 password from config file")
 	default:
-		credentials = &Credentials{common.Conf.Backend["f5user"], common.Conf.Backend["f5password"]}
+		credentials = &Credentials{conf.Backend["f5user"], conf.Backend["f5password"]}
 	}
 
 }

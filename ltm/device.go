@@ -2,12 +2,19 @@ package ltm
 
 import (
 	"fmt"
-	"github.com/zalando-techmonkeys/baboon-proxy/backend"
-	"github.com/zalando-techmonkeys/baboon-proxy/common"
-	"github.com/zalando-techmonkeys/baboon-proxy/errors"
-	"github.com/zalando-techmonkeys/baboon-proxy/util"
 	"net/url"
 	"path"
+
+	"github.com/zalando-techmonkeys/baboon-proxy/backend"
+	"github.com/zalando-techmonkeys/baboon-proxy/common"
+	"github.com/zalando-techmonkeys/baboon-proxy/config"
+	"github.com/zalando-techmonkeys/baboon-proxy/errors"
+	"github.com/zalando-techmonkeys/baboon-proxy/util"
+)
+
+var (
+	conf         = config.LoadConfig()
+	ltmPartition = conf.Partition["ltm"]
 )
 
 // Devices struct provides information

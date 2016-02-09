@@ -1,7 +1,5 @@
 package common
 
-import "github.com/zalando-techmonkeys/baboon-proxy/config"
-
 //Constants for HTTP methods
 const (
 	GET = iota + 1
@@ -10,9 +8,6 @@ const (
 	PATCH
 	DELETE
 )
-
-// Conf inherits baboon config
-var Conf *config.Config
 
 // Protocol Scheme
 const Protocol = "https"
@@ -57,7 +52,7 @@ const InternalDataGroup = "internal"
 const ExternalDataGroup = "external"
 
 // AddressList Local Traffic Manager Network Firewall Address List Path
-const AddressList = "/mgmt/tm/security/firewall/address-list/"
+const AddressListURI = "/mgmt/tm/security/firewall/address-list/"
 
 // BlackList Local Traffic Manager BlackList Address List
 // for future planning ipv6 addresses
@@ -65,7 +60,3 @@ const BlackList = "black_listed_ipv4_addr"
 
 // WhiteList Local Traffic Manager WhiteList Address List
 const WhiteList = "white_listed_ipv4_addr"
-
-func init() {
-	Conf = config.LoadConfig()
-}
