@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"net"
 	"strings"
+
+	"github.com/zalando-techmonkeys/baboon-proxy/common"
 )
 
 // ReplaceCommon takes common partition and replaces with an empty string
@@ -24,7 +26,13 @@ func ReplaceColon(s string) string {
 // ReplaceLTMUritoDeviceURI takes local taffic manager path
 // and replaces it with device path
 func ReplaceLTMUritoDeviceURI(s string) string {
-	return strings.Replace(s, "/mgmt/tm/ltm", "/mgmt/tm/cm/device", -1)
+	return strings.Replace(s, common.LtmURI, common.DeviceURI, -1)
+}
+
+// ReplaceLTMUritoAddressListURI takes local taffic manager path
+// and replaces it with address list path
+func ReplaceLTMUritoAddressListURI(s string) string {
+	return strings.Replace(s, common.LtmURI, common.AddressListURI, -1)
 }
 
 // ReplaceGTMWipUritoGTMPoolURI replace wideips with pools

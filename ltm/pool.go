@@ -2,15 +2,12 @@ package ltm
 
 import (
 	"fmt"
+	"net/url"
+	"path"
+
 	"github.com/zalando-techmonkeys/baboon-proxy/backend"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
 	"github.com/zalando-techmonkeys/baboon-proxy/errors"
-	"net/url"
-	"path"
-)
-
-var (
-	ltmPartition = common.Conf.Partition["ltm"]
 )
 
 /*

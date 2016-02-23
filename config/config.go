@@ -97,7 +97,7 @@ func LoadAuthConf(config *Config) ([]ginoauth2.AccessTuple, []ginoauth2.AccessTu
 	return rootUsers, emergencyUsers, &endpoint, nil
 }
 
-// LoadConfig load config file
+// LoadConfig initiliaze config file
 func LoadConfig() *Config {
 	var err *Error
 	conf, err := InitConfig("config.yaml")

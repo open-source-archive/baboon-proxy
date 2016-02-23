@@ -13,8 +13,8 @@ func TestReplaceCommon(t *testing.T) {
 	is := "/Common/vs_test_80"
 	expected := "vs_test_80"
 
-	get := ReplaceCommon(is)
-	if get != expected {
+	got := ReplaceCommon(is)
+	if got != expected {
 		t.Error("Should replace /Common/")
 	}
 }
@@ -28,17 +28,31 @@ func TestReplaceColon(t *testing.T) {
 	if expect != got {
 		t.Errorf("Expect: %s, but got %s", expect, got)
 	} else {
-		t.Logf("Expect : %s, but got %s", expect, got)
+		t.Logf("Expect : %s, and got %s", expect, got)
 	}
 }
 
 func TestReplaceLTMUritoDeviceUri(t *testing.T) {
 	is := "https://f5.com/mgmt/tm/ltm"
-	expected := "https://f5.com/mgmt/tm/cm/device"
+	expect := "https://f5.com/mgmt/tm/cm/device"
 
-	get := ReplaceLTMUritoDeviceURI(is)
-	if get != expected {
-		t.Error("Should replace /mgmt/tm/ltm with /mgmt/tm/cm/device")
+	got := ReplaceLTMUritoDeviceURI(is)
+	if expect != got {
+		t.Errorf("Expect: %s, but got %s", expect, got)
+	} else {
+		t.Logf("Expect : %s, and got %s", expect, got)
+	}
+}
+
+func TestReplaceLTMUritoAddressListURI(t *testing.T) {
+	is := "https://f5.com/mgmt/tm/ltm"
+	expect := "https://f5.com/mgmt/tm/security/firewall/address-list/"
+
+	got := ReplaceLTMUritoAddressListURI(is)
+	if expect != got {
+		t.Errorf("Expect: %s, but got %s", expect, got)
+	} else {
+		t.Logf("Expect : %s, and got %s", expect, got)
 	}
 }
 
@@ -51,7 +65,7 @@ func TestReplaceGTMWipUritoGTMPoolURI(t *testing.T) {
 	if expect != got {
 		t.Errorf("Expect: %s, but got %s", expect, got)
 	} else {
-		t.Logf("Expect : %s, but got %s", expect, got)
+		t.Logf("Expect : %s, and got %s", expect, got)
 	}
 }
 

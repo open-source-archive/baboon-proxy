@@ -1,10 +1,18 @@
 package gtm
 
 import (
-	"github.com/zalando-techmonkeys/baboon-proxy/common"
-	"github.com/zalando-techmonkeys/baboon-proxy/errors"
 	"net"
 	"time"
+
+	"github.com/zalando-techmonkeys/baboon-proxy/config"
+	"github.com/zalando-techmonkeys/baboon-proxy/errors"
+)
+
+// Baboon Config
+var (
+	conf         = config.LoadConfig()
+	gtmPartition = conf.Partition["gtm"]
+	ltmPartition = conf.Partition["ltm"]
 )
 
 // Trafficmanager matches internal (ITM)
@@ -16,8 +24,8 @@ func Trafficmanager(cluster string) (string, *errors.Error) {
 		dnsserver         string
 		seconds           = 2
 		tm                map[string]string
-		internalListeners = common.Conf.Internalgtmlisteners
-		externalListeners = common.Conf.Externalgtmlisteners
+		internalListeners = conf.Internalgtmlisteners
+		externalListeners = conf.Externalgtmlisteners
 	)
 
 	switch cluster {

@@ -1,13 +1,14 @@
 package ltm
 
 import (
+	"net/url"
+	"path"
+
 	"github.com/golang/glog"
 	"github.com/zalando-techmonkeys/baboon-proxy/backend"
 	"github.com/zalando-techmonkeys/baboon-proxy/common"
 	"github.com/zalando-techmonkeys/baboon-proxy/errors"
 	"github.com/zalando-techmonkeys/baboon-proxy/util"
-	"net/url"
-	"path"
 )
 
 // DeleteAddresses include fields
@@ -45,7 +46,7 @@ func ShowLTMAddressList(host, address string) (*backend.Response, *AddressList, 
 	if errParse != nil {
 		return nil, nil, &errors.ErrorCodeBadRequestParse
 	}
-	u.Path = path.Join(u.Path, common.AddressList, address)
+	u.Path = path.Join(u.Path, address)
 	res, err := backend.Request(common.GET, u.String(), addresslist)
 	if err != nil {
 		return nil, nil, err
@@ -60,7 +61,7 @@ func ShowLTMAddressListName(host, address string) (*backend.Response, *AddressLi
 	if errParse != nil {
 		return nil, nil, &errors.ErrorCodeBadRequestParse
 	}
-	u.Path = path.Join(u.Path, common.AddressList, address)
+	u.Path = path.Join(u.Path, address)
 	res, err := backend.Request(common.GET, u.String(), addresslist)
 	if err != nil {
 		return nil, nil, err
@@ -131,7 +132,7 @@ func PatchLTMBlockAddresses(host string, blockIP *CreateAddresses) (*backend.Res
 	if errParse != nil {
 		return nil, &errors.ErrorCodeBadRequestParse
 	}
-	u.Path = path.Join(u.Path, common.AddressList, common.BlackList)
+	u.Path = path.Join(u.Path, common.BlackList)
 
 	r, err := backend.Request(common.PATCH, u.String(), &blockIP)
 	if err != nil {
@@ -140,15 +141,15 @@ func PatchLTMBlockAddresses(host string, blockIP *CreateAddresses) (*backend.Res
 	return r, nil
 }
 
-// DeleteLTMBlockAddresses remove IPs from blacklist
-func DeleteLTMBlockAddresses(host string, deleteIP *DeleteAddresses) (*backend.Response, *errors.Error) {
+// DeleteLTMBlockAddresses remove IPs from blacklist or whitelist
+func DeleteLTMBlockAddresses(host string, deleteIP *DeleteAddresses, addresslist string) (*backend.Response, *errors.Error) {
 	u, errParse := url.Parse(host)
 	if errParse != nil {
 		return nil, &errors.ErrorCodeBadRequestParse
 	}
-	u.Path = path.Join(u.Path, common.AddressList, common.BlackList)
+	u.Path = path.Join(u.Path, addresslist)
 
-	_, blackIP, err := ShowLTMAddressListName(host, common.BlackList)
+	_, blackIP, err := ShowLTMAddressListName(host, addresslist)
 	if err != nil {
 		return nil, err
 	}
@@ -224,7 +225,7 @@ func PatchLTMWhiteAddresses(host string, whiteIP *CreateAddresses) (*backend.Res
 	if errParse != nil {
 		return nil, &errors.ErrorCodeBadRequestParse
 	}
-	u.Path = path.Join(u.Path, common.AddressList, common.WhiteList)
+	u.Path = path.Join(u.Path, common.WhiteList)
 
 	r, err := backend.Request(common.PATCH, u.String(), &whiteIP)
 	if err != nil {

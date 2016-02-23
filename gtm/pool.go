@@ -10,11 +10,6 @@ import (
 	"github.com/zalando-techmonkeys/baboon-proxy/errors"
 )
 
-var (
-	gtmPartition = common.Conf.Partition["gtm"]
-	ltmPartition = common.Conf.Partition["ltm"]
-)
-
 // Pools struct provides information about multiple pools
 type Pools struct {
 	Kind  string `json:"kind"`
