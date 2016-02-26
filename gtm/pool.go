@@ -87,7 +87,8 @@ type ModifyPoolMemberStatus struct {
 
 // ModifyPoolStatus struct to modify a pool status client-side
 type ModifyPoolStatus struct {
-	Status bool `json:"status"`
+	Name   string `json:"name"`
+	Status bool   `json:"status"`
 }
 
 // EnablePoolMemberStatus enables a gtm pool member client-side
@@ -300,14 +301,14 @@ func PutGTMPoolMemberStatus(host, pool string, poolmember *ModifyPoolMemberStatu
 }
 
 // PutGTMPoolStatus modify status of wideip pool
-func PutGTMPoolStatus(host, pool string, poolmodify *ModifyPoolStatus) (*backend.Response, *errors.Error) {
+func PutGTMPoolStatus(host string, poolmodify *ModifyPoolStatus) (*backend.Response, *errors.Error) {
 	u, errParse := url.Parse(host)
 	if errParse != nil {
 		return nil, &errors.ErrorCodeBadRequestParse
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri)
-	u.Path = path.Join(u.Path, fmt.Sprintf("/~%s~%s", gtmPartition, pool))
+	u.Path = path.Join(u.Path, fmt.Sprintf("/~%s~%s", gtmPartition, poolmodify.Name))
 	var poolstatus interface{}
 	switch poolmodify.Status {
 	case true:

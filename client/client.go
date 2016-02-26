@@ -773,10 +773,9 @@ func GTMPoolMemberStatusPut(c *gin.Context) {
 // GTMPoolStatusPut modify pool member status on a global traffic manager (enabled, disabled)
 func GTMPoolStatusPut(c *gin.Context) {
 	var poolstatus gtm.ModifyPoolStatus
-	pool := c.Params.ByName("pool")
 	f5url, err := gtm.Trafficmanager(c.Params.ByName("trafficmanager"))
 	if err != nil {
-		respondWithStatus(err.Status, pool, nil, err.Message, conf.Documentation["gtmpooldocumentationuri"], c)
+		respondWithStatus(err.Status, poolstatus.Name, nil, err.Message, conf.Documentation["gtmpooldocumentationuri"], c)
 		return
 	}
 	if err := c.BindJSON(&poolstatus); err != nil {
@@ -784,13 +783,13 @@ func GTMPoolStatusPut(c *gin.Context) {
 			fmt.Sprintf("%s", err), conf.Documentation["gtmpooldocumentationuri"], c)
 		return
 	}
-	res, err := gtm.PutGTMPoolStatus(f5url, pool, &poolstatus)
+	res, err := gtm.PutGTMPoolStatus(f5url, &poolstatus)
 	if err != nil {
-		respondWithStatus(err.Status, pool, nil, err.Message, conf.Documentation["gtmpooldocumentationuri"], c)
+		respondWithStatus(err.Status, poolstatus.Name, nil, err.Message, conf.Documentation["gtmpooldocumentationuri"], c)
 		return
 	}
 	json.Unmarshal([]byte(res.Body), &returnerror)
-	respondWithStatus(res.Status, "Pool modified", pool,
+	respondWithStatus(res.Status, "Pool modified", poolstatus.Name,
 		returnerror.ErrorMessage(), conf.Documentation["gtmpooldocumentationuri"], c)
 }
 
