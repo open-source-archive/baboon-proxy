@@ -42,7 +42,8 @@ func init() {
 
 func main() {
 	app := gin.New()
-	var conf *config.Config
+	// Initialize config file
+	conf := config.LoadConfig()
 
 	// Version
 	version := client.Version{Build: BuildTime, Hash: GitHash}
