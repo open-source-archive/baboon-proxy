@@ -42,7 +42,8 @@ func init() {
 
 func main() {
 	app := gin.New()
-	var conf *config.Config
+	// Initialize config file
+	conf := config.LoadConfig()
 
 	// Version
 	version := client.Version{Build: BuildTime, Hash: GitHash}
@@ -84,7 +85,7 @@ func main() {
 		emergencyGTM.Use(ginoauth2.Auth(ginoauth2.UidCheck, *OAuth2Endpoint, emergencyusers))
 		{
 			emergencyGTM.PUT("/pools/:pool/members", client.GTMPoolMemberStatusPut)
-			emergencyGTM.PUT("/pools/:pool", client.GTMPoolStatusPut)
+			emergencyGTM.PUT("/pools", client.GTMPoolStatusPut)
 		}
 	}
 	if *ltmenabled {
