@@ -1,4 +1,9 @@
 language: go
+
 go:
-    - 1.4
-    - tip
+- 1.6
+
+notifications:
+  hipchat:
+    rooms:
+      secure: P2G9Y1ASo3m/OY+ETp4kSrJYG+2d14Lgb3ctrDtxKiogXO6d5pCBqitcmxFU6N7ORjcL44A66qJBu7kFzCTYdIxPIL3/0mZWB0LdwaZbQl5nn7Gm9akpPL3zfmdssTHSSigzEy9R6FqSuOs375GWBax2WHO7CMOSkyeyK+Np9vrAJlzTQrq1j6bDzyA+/ofC5AdWNOQHPouneXNqS75TuxYAVCLme3mw3iB5AYbYB02vhOCv1mz5lcOf3yae3iNL0hzRa89e9GhZmyCddiTCS0aVX2GBp59EdnoxnD0LJOq+MDhYHDpl4kq0BbfZ2qbKB9wlIra9OPoXuvu4m07EwoQ09F2rzB+7fZx5r5nhMvdYCsRjW6TVNRN+4E05z7JiNCwKFouIzCnND8Gr9PShmqjMcPBeAPGnN0a25ISBLsml6Zb6vLcMxmVrwL1NRZb9JavElI3aBzt50VJr4DKDAUya2AbiKvNxrZyXPsOHtz+s2vbamzaez+mzvIfScYcdVvwm0hyWmMwkF0PUduP1QBqCICNaa+kC/p8l/AoInLbsSJHV6txkojR7g3zIkoKIluvoYjKHDQNKpuSmKZWkjLsiC8bCtA2rA6Wz1h8gF8pQ2FRCsEXCEQs+6Yh5Bt3PohykxRzjPEo+5dNv0bytLVYDL/+dfDbNGMeHnSQPOKo=
