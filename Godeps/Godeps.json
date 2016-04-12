@@ -1,11 +1,19 @@
 {
 	"ImportPath": "github.com/zalando-techmonkeys/baboon-proxy",
-	"GoVersion": "go1.5.1",
+	"GoVersion": "go1.6",
 	"Deps": [
 		{
 			"ImportPath": "github.com/BurntSushi/toml",
 			"Comment": "v0.1.0-21-g056c9bc",
 			"Rev": "056c9bc7be7190eaa7715723883caffa5f8fa3e4"
+		},
+		{
+			"ImportPath": "github.com/alouca/gologger",
+			"Rev": "7d4b7291de9c9df1b3fe6a3d784b3675b6c0c996"
+		},
+		{
+			"ImportPath": "github.com/alouca/gosnmp",
+			"Rev": "6e88bedb3081fefb864b2aa233b3419ff5ad2bd1"
 		},
 		{
 			"ImportPath": "github.com/gin-gonic/contrib/gzip",
@@ -66,10 +74,6 @@
 		{
 			"ImportPath": "github.com/spf13/viper",
 			"Rev": "1967d93db724f4a5c0e101307e96d82ff520a067"
-		},
-		{
-			"ImportPath": "github.com/stretchr/testify/assert",
-			"Rev": "59fc8e570cd707a33a93842b00a9aae4b5cd38b2"
 		},
 		{
 			"ImportPath": "github.com/zalando-techmonkeys/gin-oauth2",

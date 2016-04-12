@@ -98,3 +98,75 @@ func TestVerifyIPv4Scope(t *testing.T) {
 		}
 	}
 }
+
+func TestCheckDeviceStatus(t *testing.T) {
+	var signalTest = []struct {
+		signal int
+		expect string
+	}{
+		{1, "Offline"},
+		{2, "ForcedOffline"},
+		{3, "Standby"},
+		{4, "Active"},
+		{5, "Unknown"},
+	}
+	for _, tt := range signalTest {
+		actual := CheckDeviceStatus(tt.signal)
+		if actual != tt.expect {
+			t.Errorf("CheckDeviceStatus(%d): expected %s, actual %s", tt.signal, tt.expect, actual)
+		}
+	}
+}
+
+func TestCheckPoolStatus(t *testing.T) {
+	var signalTest = []struct {
+		signal string
+		expect string
+	}{
+		{"Available", "Available"},
+		{"No enabled pool members available", "No enabled pool members available"},
+		{"Unknown", "Unknown"},
+	}
+	for _, tt := range signalTest {
+		actual := CheckPoolStatus(tt.signal)
+		if actual != tt.expect {
+			t.Errorf("CheckPoolStatus(%s): expected %s, actual %s", tt.signal, tt.expect, actual)
+		}
+	}
+}
+
+func TestCheckWideIPStatus(t *testing.T) {
+	var signalTest = []struct {
+		signal string
+		expect string
+	}{
+		{"Available", "Available"},
+		{"No enabled pools available", "No enabled pools available"},
+		{"Unknown", "Unknown"},
+	}
+	for _, tt := range signalTest {
+		actual := CheckWideIPStatus(tt.signal)
+		if actual != tt.expect {
+			t.Errorf("CheckWideIPStatus(%s): expected %s, actual %s", tt.signal, tt.expect, actual)
+		}
+	}
+}
+
+func TestCheckGSLBServerStatus(t *testing.T) {
+	var signalTest = []struct {
+		signal int
+		expect string
+	}{
+		{1, "Available"},
+		{2, "Unavailable"},
+		{3, "No enabled Virtual Server available"},
+		{4, "Unknown"},
+		{5, "Unlicensed"},
+	}
+	for _, tt := range signalTest {
+		actual := CheckGSLBServerStatus(tt.signal)
+		if actual != tt.expect {
+			t.Errorf("CheckGSLBServerStatus(%d): expected %s, actual %s", tt.signal, tt.expect, actual)
+		}
+	}
+}

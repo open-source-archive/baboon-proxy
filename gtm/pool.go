@@ -58,9 +58,10 @@ type Pool struct {
 
 // CreatePool struct to create a pool
 type CreatePool struct {
-	Name    string             `json:"name"`
-	Members []CreatePoolMember `json:"members"`
-	Monitor string             `json:"monitor"`
+	Name          string             `json:"name"`
+	Members       []CreatePoolMember `json:"members"`
+	Monitor       string             `json:"monitor"`
+	CanonicalName string             `json:"canonicalName,omitempty"`
 }
 
 // CreatePoolMember struct to create a member in a pool
@@ -202,7 +203,6 @@ func PostGTMPool(host string, json *CreatePool) (*backend.Response, *errors.Erro
 	}
 	u.Scheme = common.Protocol
 	u.Path = path.Join(u.Path, common.Gtmpoolsuri)
-
 	for i := range json.Members {
 		json.Members[i].Partition = gtmPartition
 		json.Members[i].Subpath = fmt.Sprintf("%s:/%s", json.Members[i].Loadbalancer, gtmPartition)
