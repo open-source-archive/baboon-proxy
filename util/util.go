@@ -63,3 +63,63 @@ func VerifyIPv4Scope(sourceIP, rangeIP string) bool {
 	}
 	return false
 }
+
+func CheckDeviceStatus(signal int) string {
+	var status string
+	switch signal {
+	case 1:
+		status = "Offline"
+	case 2:
+		status = "ForcedOffline"
+	case 3:
+		status = "Standby"
+	case 4:
+		status = "Active"
+	default:
+		status = "Unknown"
+	}
+	return status
+}
+
+func CheckPoolStatus(signal string) string {
+	var status string
+	switch signal {
+	case "Available":
+		status = "Available"
+	case "No enabled pool members available":
+		status = "No enabled pool members available"
+	default:
+		status = "Unknown"
+	}
+	return status
+}
+
+func CheckWideIPStatus(signal string) string {
+	var status string
+	switch signal {
+	case "Available":
+		status = "Available"
+	case "No enabled pools available":
+		status = "No enabled pools available"
+	default:
+		status = "Unknown"
+	}
+	return status
+}
+
+func CheckGSLBServerStatus(signal int) string {
+	var status string
+	switch signal {
+	case 1:
+		status = "Available"
+	case 2:
+		status = "Unavailable"
+	case 3:
+		status = "No enabled Virtual Server available"
+	case 4:
+		status = "Unknown"
+	case 5:
+		status = "Unlicensed"
+	}
+	return status
+}

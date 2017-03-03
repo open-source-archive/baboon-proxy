@@ -15,10 +15,11 @@ import (
 )
 
 var (
-	port       *int
-	sslenabled *bool
-	gtmenabled *bool
-	ltmenabled *bool
+	port          *int
+	sslenabled    *bool
+	gtmenabled    *bool
+	ltmenabled    *bool
+	healthenabled *bool
 	// BuildTime for Debugging
 	BuildTime = "No BuildTime Provided"
 	// GitHash for Debugging
@@ -26,7 +27,7 @@ var (
 )
 
 func usage() {
-	fmt.Fprint(os.Stderr, fmt.Sprintf("Build Time: %s\nGit Commit Hash: %s\n\nUsage: ./baboon-proxy \n\t-port=80 \n\t-ssl-enabled=false \n\t-ltm-enabled=false \n\t-gtm-enabled=false \n\t-stderrthreshold=[INFO|WARN|FATAL] \n\t-log_dir=[string]\n\nExplanation:\n", BuildTime, GitHash))
+	fmt.Fprint(os.Stderr, fmt.Sprintf("Build Time: %s\nGit Commit Hash: %s\n\nUsage: ./baboon-proxy \n\t-port=80 \n\t-ssl-enabled=false \n\t-health-enabled=false \n\t-ltm-enabled=false \n\t-gtm-enabled=false \n\t-stderrthreshold=[INFO|WARN|FATAL] \n\t-log_dir=[string]\n\nExplanation:\n", BuildTime, GitHash))
 	flag.PrintDefaults()
 	os.Exit(2)
 }
@@ -36,6 +37,7 @@ func init() {
 	sslenabled = flag.Bool("ssl-enabled", false, "enable SSL")
 	ltmenabled = flag.Bool("ltm-enabled", false, "enable LTM feature")
 	gtmenabled = flag.Bool("gtm-enabled", false, "enable GTM feature")
+	healthenabled = flag.Bool("health-enabled", false, "enable Health feature")
 	flag.Usage = usage
 	flag.Parse()
 }
@@ -130,6 +132,17 @@ func main() {
 			emergencyLTM.PATCH("/whitelist", client.LTMWhiteIPPatch)
 			emergencyLTM.DELETE("/whitelist", client.LTMRemoveWhiteIPPatch)
 			emergencyLTM.DELETE("/blacklist", client.LTMRemoveBlockIPPatch)
+		}
+
+	}
+	// currently these backends calls are SNMP requests
+	if *healthenabled {
+		health := app.Group("/api/health/:trafficmanager")
+		{
+			health.GET("/server", client.HealthServer)
+			health.GET("/pools", client.HealthPools)
+			health.GET("/wideips", client.HealthWideIPs)
+			health.GET("/gslb", client.HealthGSLB)
 		}
 	}
 	switch {

@@ -32,6 +32,19 @@ type Config struct {
 	Internalgtmlisteners map[string]string
 	Backend              map[string]string
 	Partition            map[string]string
+	LTMMgmtIP            map[string]string
+	GTMMgmtIP            map[string]string
+	ITMMgmtIP            map[string]string
+	SNMP                 SNMPBase
+}
+
+// SNMPBase contain fields to check backend health
+type SNMPBase struct {
+	Community string
+	Version   string
+	TimeOut   int
+	Port      string
+	OIDs      map[string]interface{}
 }
 
 // Error contain fields of config error handling
